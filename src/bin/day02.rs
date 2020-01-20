@@ -1,25 +1,7 @@
 use std::collections::HashMap;
-use std::io::{self, BufRead};
 use std::option::Option;
 use std::vec::Vec;
-
-fn read_input() -> Vec<String> {
-    let mut data: Vec<String> = Vec::new();
-    let stdin = io::stdin();
-    for line in stdin.lock().lines() {
-        match line {
-            Ok(line) => {
-                let val: String = line.trim().to_string();
-                data.push(val);
-            },
-            Err(e) => {
-                eprintln!("Error reading stdin: {}", e);
-                break;
-            },
-        };
-    };
-    return data;
-}
+extern crate advent;
 
 fn part1(input: &Vec<String>) {
     let mut twos: i32 = 0;
@@ -85,7 +67,7 @@ fn check_string_diff(s1: &String, s2: &String) -> Option<String> {
 }
 
 fn main() {
-    let input: Vec<String> = read_input();
+    let input: Vec<String> = advent::read_input::<String>();
     part1(&input);
     part2(&input);
 }

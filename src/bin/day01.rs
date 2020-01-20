@@ -1,23 +1,6 @@
 use std::collections::HashSet;
-use std::io::{self, BufRead};
 use std::vec::Vec;
-
-fn read_input() -> Vec<i32> {
-    let mut data: Vec<i32> = Vec::new();
-    for line in io::stdin().lock().lines() {
-        match line {
-            Ok(line) => {
-                let val: i32 = line.trim().parse().expect("invalid input");
-                data.push(val);
-            },
-            Err(e) => {
-                eprintln!("Error reading stdin: {}", e);
-                break;
-            },
-        };
-    };
-    return data;
-}
+extern crate advent;
 
 fn part1(input: &Vec<i32>) {
     let mut freq: i32 = 0;
@@ -43,7 +26,7 @@ fn part2(input: &Vec<i32>) {
 }
 
 fn main() {
-    let input: Vec<i32> = read_input();
+    let input: Vec<i32> = advent::read_input::<i32>();
     part1(&input);
     part2(&input);
 }

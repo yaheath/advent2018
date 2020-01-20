@@ -1,10 +1,10 @@
 #[macro_use] extern crate lazy_static;
 use std::cmp::{max, min};
 use std::collections::HashSet;
-use std::io::{self, BufRead};
 use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
+extern crate advent;
 
 #[derive(Debug)]
 struct Claim {
@@ -62,24 +62,6 @@ impl FromStr for Claim {
     }
 }
 
-fn read_input() -> Vec<Claim> {
-    let mut data: Vec<Claim> = Vec::new();
-    let stdin = io::stdin();
-    for line in stdin.lock().lines() {
-        match line {
-            Ok(line) => {
-                let val: Claim = line.trim().parse().expect("parse error");
-                data.push(val);
-            },
-            Err(e) => {
-                eprintln!("Error reading stdin: {}", e);
-                break;
-            },
-        };
-    };
-    return data;
-}
-
 fn part1(data: &Vec<Claim>) {
     let mut overlaps: HashSet<String> = HashSet::new();
     let mut allkeys: HashSet<String> = HashSet::new();
@@ -103,6 +85,6 @@ fn part1(data: &Vec<Claim>) {
 }
 
 fn main() {
-    let data = read_input();
+    let data = advent::read_input::<Claim>();
     part1(&data);
 }
