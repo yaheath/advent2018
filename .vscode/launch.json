@@ -1,0 +1,153 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'advent'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "advent",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day01'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day01",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day01",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day01.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day02'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day02",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day02",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day02.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day03'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day03",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day03",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day03.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day04'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day04",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day04",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day04.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day05'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day05",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day05",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day05.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day06'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day06",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day06",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day06.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day07'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day07",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day07",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day07.input"],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
