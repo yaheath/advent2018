@@ -63,8 +63,8 @@ struct Worker {
     finish_at: u32,
 }
 impl Worker {
-    fn new() -> Worker {
-        Worker { item: ' ', finish_at: 0 }
+    fn new() -> Self {
+        Self { item: ' ', finish_at: 0 }
     }
     fn is_idle(&self) -> bool {
         self.item == ' '

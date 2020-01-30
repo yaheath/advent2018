@@ -38,10 +38,10 @@ struct Grid {
 }
 
 impl Grid {
-    pub fn new(min_x:i32, min_y:i32, max_x:i32, max_y:i32) -> Grid {
+    pub fn new(min_x:i32, min_y:i32, max_x:i32, max_y:i32) -> Self {
         let x_size = (max_x - min_x + 1) as usize;
         let y_size = (max_y - min_y + 1) as usize;
-        let mut g = Grid {
+        let mut g = Self {
             min_x: min_x,
             min_y: min_y,
             x_size: x_size,
