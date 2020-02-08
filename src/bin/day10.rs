@@ -79,7 +79,7 @@ fn bothparts(data: &Vec<Point>) {
         }
         elapsed += 1;
     }
-    let mut grid = advent::Grid::new(minx, miny, maxx, maxy);
+    let mut grid = advent::Grid::new(minx, miny, maxx, maxy, -1);
     for s in stars.iter() {
         grid.set(s.x_loc, s.y_loc, 1);
     }

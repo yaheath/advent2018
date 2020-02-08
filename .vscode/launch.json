@@ -148,6 +148,114 @@
             },
             "args": ["day07.input"],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day08'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day08",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day08",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day08.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day09'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day09",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day09",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day09.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day10'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day10",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day10",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day10.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day11'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day11",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day11",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day11.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day12'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day12",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day12",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day12.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day13'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day13",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day13",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day13.input"],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

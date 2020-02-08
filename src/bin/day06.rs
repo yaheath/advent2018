@@ -44,8 +44,8 @@ fn bothparts(data: &Vec<Coord>) {
         .fold(0, |acc, v| max(acc, v)) + MARGIN;
     let max_y: i32 = data.iter().map(|c| c.y)
         .fold(0, |acc, v| max(acc, v)) + MARGIN;
-    let mut grid = advent::Grid::new(min_x, min_y, max_x, max_y);
-    let mut td_grid = advent::Grid::new(min_x, min_y, max_x, max_y);
+    let mut grid = advent::Grid::new(min_x, min_y, max_x, max_y, -1);
+    let mut td_grid = advent::Grid::new(min_x, min_y, max_x, max_y, -1);
     for x in min_x .. max_x+1 {
         for y in min_y .. max_y+1 {
             let mut mindex = -1;

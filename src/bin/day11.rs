@@ -5,7 +5,7 @@ fn main() {
     let input: Vec<i32> = advent::read_input::<i32>();
     let serial_no = input[0];
 
-    let mut grid = advent::Grid::new(1, 1, 300, 300);
+    let mut grid = advent::Grid::new(1, 1, 300, 300, -1);
     for y in 1i32..301 {
         for x in 1i32..301 {
             grid.set(x, y, power_level(x, y, serial_no));
@@ -16,16 +16,16 @@ fn main() {
     part2(&grid);
 }
 
-fn part1(grid: &advent::Grid) {
+fn part1(grid: &advent::Grid<i32>) {
     let (x, y, _) = search(grid, 3, 3);
     println!("Part 1: {},{}", x, y);
 }
-fn part2(grid: &advent::Grid) {
+fn part2(grid: &advent::Grid<i32>) {
     let (x, y, size) = search(grid, 1, 300);
     println!("Part 2: {},{},{}", x, y, size);
 }
 
-fn search(grid: &advent::Grid, min_sizes: i32, max_sizes: i32)
+fn search(grid: &advent::Grid<i32>, min_sizes: i32, max_sizes: i32)
           -> (i32, i32, i32) {
     let mut max_size = 0i32;
     let mut max_max_x = 0i32;
