@@ -256,6 +256,24 @@
             },
             "args": ["day13.input"],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day14'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day14",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day14",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day14.input"],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
