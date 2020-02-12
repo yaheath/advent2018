@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::option::Option;
 use std::vec::Vec;
 extern crate advent;
+use advent::read::read_input;
 
 fn part1(input: &Vec<String>) {
     let mut twos: i32 = 0;
@@ -67,7 +68,7 @@ fn check_string_diff(s1: &String, s2: &String) -> Option<String> {
 }
 
 fn main() {
-    let input: Vec<String> = advent::read_input::<String>();
+    let input: Vec<String> = read_input::<String>();
     part1(&input);
     part2(&input);
 }

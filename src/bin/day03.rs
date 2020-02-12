@@ -5,6 +5,7 @@ use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
 extern crate advent;
+use advent::read::read_input;
 
 #[derive(Debug)]
 struct Claim {
@@ -85,6 +86,6 @@ fn part1(data: &Vec<Claim>) {
 }
 
 fn main() {
-    let data = advent::read_input::<Claim>();
+    let data = read_input::<Claim>();
     part1(&data);
 }

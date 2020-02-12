@@ -2,9 +2,10 @@
 use regex::Regex;
 use std::vec::Vec;
 extern crate advent;
+use advent::read::read_input;
 
 fn main() {
-    let input: Vec<String> = advent::read_input::<String>();
+    let input: Vec<String> = read_input::<String>();
     part1(&input[0]);
     part2(&input[0]);
 }

@@ -2,6 +2,7 @@
 use regex::Regex;
 use std::collections::HashMap;
 extern crate advent;
+use advent::read::read_input;
 
 struct Guard {
     //id: i32,
@@ -23,7 +24,7 @@ impl Guard {
 }
 
 fn main() {
-    let mut data = advent::read_input::<String>();
+    let mut data = read_input::<String>();
     data.sort_unstable();
 
     let mut cur_guard_id: i32 = -1;

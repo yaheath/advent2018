@@ -4,6 +4,8 @@ use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
 extern crate advent;
+use advent::read::read_input;
+use advent::number_line::NumberLine;
 
 enum InputItem {
     InitialState(Vec<bool>),
@@ -59,7 +61,7 @@ impl FromStr for InputItem {
 }
 
 fn main() {
-    let data = advent::read_input::<InputItem>();
+    let data = read_input::<InputItem>();
     let mut map: HashMap<u32, bool> = HashMap::with_capacity(data.len() - 2);
     let mut initial: Option<&Vec<bool>> = None;
     for i in 0..32 {
@@ -76,12 +78,12 @@ fn main() {
     part2(&map, &initial.unwrap());
 }
 
-fn stringify(pots: &advent::NumberLine<bool>) -> String {
+fn stringify(pots: &NumberLine<bool>) -> String {
     pots.enumerate().map(|v| if v.1 { '#' } else { '.' }).collect::<String>()
 }
 
 fn part1(map: &HashMap<u32, bool>, initial: &Vec<bool>) {
-    let mut pots = advent::NumberLine::<bool>::from_initial(initial, false);
+    let mut pots = NumberLine::<bool>::from_initial(initial, false);
     for _ in 0..20 {
         step(&mut pots, map);
     }
@@ -93,7 +95,7 @@ fn part1(map: &HashMap<u32, bool>, initial: &Vec<bool>) {
 }
 
 fn part2(map: &HashMap<u32, bool>, initial: &Vec<bool>) {
-    let mut pots = advent::NumberLine::<bool>::from_initial(initial, false);
+    let mut pots = NumberLine::<bool>::from_initial(initial, false);
     let mut states: HashMap<String, (i64, usize)> = HashMap::new();
     let mut gen = 0usize;
     loop {
@@ -129,7 +131,7 @@ fn part2(map: &HashMap<u32, bool>, initial: &Vec<bool>) {
     }
 }
 
-fn step(pots: &mut advent::NumberLine<bool>, map: &HashMap<u32, bool>) {
+fn step(pots: &mut NumberLine<bool>, map: &HashMap<u32, bool>) {
     let oldpots = pots.clone();
     for idx in oldpots.start_index() - 2 .. oldpots.end_index() + 2 {
         let mut val: u32 = 0;

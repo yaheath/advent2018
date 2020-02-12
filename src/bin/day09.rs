@@ -5,6 +5,7 @@ use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
 extern crate advent;
+use advent::read::read_input;
 
 struct Input {
     n_players: usize,
@@ -30,7 +31,7 @@ impl FromStr for Input {
 }
 
 fn main() {
-    let data = advent::read_input::<Input>();
+    let data = read_input::<Input>();
     part1(&data[0]);
     part2(&data[0]);
 }

@@ -5,6 +5,7 @@ use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
 extern crate advent;
+use advent::read::read_input;
 
 #[derive(Debug)]
 struct Step {
@@ -131,7 +132,7 @@ fn part2(deps: &HashMap<char, Vec<char>>,
 }
 
 fn main() {
-    let data = advent::read_input::<Step>();
+    let data = read_input::<Step>();
     let mut deps: HashMap<char, Vec<char>> = HashMap::new();
     let mut revdeps: HashMap<char, Vec<char>> = HashMap::new();
     for step in data {

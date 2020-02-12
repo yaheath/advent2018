@@ -2,6 +2,7 @@ use std::slice::Iter;
 use std::str::FromStr;
 use std::vec::Vec;
 extern crate advent;
+use advent::read::read_input;
 
 struct Input {
     list: Vec<usize>,
@@ -19,7 +20,7 @@ impl FromStr for Input {
 }
 
 fn main() {
-    let data = advent::read_input::<Input>();
+    let data = read_input::<Input>();
     part1(&(data[0].list));
     part2(&(data[0].list));
 }

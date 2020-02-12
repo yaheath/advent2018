@@ -4,6 +4,8 @@ use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
 extern crate advent;
+use advent::read::read_input;
+use advent::grid::Grid;
 
 #[derive(Clone, Copy)]
 struct Point {
@@ -37,7 +39,7 @@ impl FromStr for Point {
 }
 
 fn main() {
-    let data = advent::read_input::<Point>();
+    let data = read_input::<Point>();
     bothparts(&data);
 }
 
@@ -79,7 +81,7 @@ fn bothparts(data: &Vec<Point>) {
         }
         elapsed += 1;
     }
-    let mut grid = advent::Grid::new(minx, miny, maxx, maxy, -1);
+    let mut grid = Grid::new(minx, miny, maxx, maxy, -1);
     for s in stars.iter() {
         grid.set(s.x_loc, s.y_loc, 1);
     }

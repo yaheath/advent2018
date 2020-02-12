@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use std::vec::Vec;
 extern crate advent;
+use advent::read::read_input;
 
 fn part1(input: &Vec<i32>) {
     let mut freq: i32 = 0;
@@ -26,7 +27,7 @@ fn part2(input: &Vec<i32>) {
 }
 
 fn main() {
-    let input: Vec<i32> = advent::read_input::<i32>();
+    let input: Vec<i32> = read_input::<i32>();
     part1(&input);
     part2(&input);
 }

@@ -1,6 +1,8 @@
 use std::cmp::max;
 use std::vec::Vec;
 extern crate advent;
+use advent::read::read_input;
+use advent::grid::Grid;
 
 #[derive(Clone, Copy, PartialEq)]
 enum Dir {
@@ -57,10 +59,10 @@ impl Cart {
 }
 
 fn main() {
-    let data = advent::read_input::<String>();
+    let data = read_input::<String>();
     let width = data.iter().map(|s| s.len()).fold(0, |maxw, w| max(w, maxw)) as i32;
     let height = data.len() as i32;
-    let mut grid = advent::Grid::new(0, 0, width-1, height-1, TrackCell::Empty);
+    let mut grid = Grid::new(0, 0, width-1, height-1, TrackCell::Empty);
     let mut carts: Vec<Cart> = Vec::new();
 
     let mut y = 0i32;
@@ -151,7 +153,7 @@ fn main() {
 }
 
 fn step(
-    grid: &mut advent::Grid<TrackCell>,
+    grid: &mut Grid<TrackCell>,
     mut carts: &mut Vec<Cart>,
     crash_happened: &mut bool,
 ) -> bool {

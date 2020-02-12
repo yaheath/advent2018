@@ -4,6 +4,8 @@ use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
 extern crate advent;
+use advent::read::read_input;
+use advent::grid::Grid;
 
 #[derive(Debug)]
 struct Coord {
@@ -29,7 +31,7 @@ impl FromStr for Coord {
 }
 
 fn main() {
-    let data = advent::read_input::<Coord>();
+    let data = read_input::<Coord>();
     bothparts(&data);
 }
 
@@ -44,8 +46,8 @@ fn bothparts(data: &Vec<Coord>) {
         .fold(0, |acc, v| max(acc, v)) + MARGIN;
     let max_y: i32 = data.iter().map(|c| c.y)
         .fold(0, |acc, v| max(acc, v)) + MARGIN;
-    let mut grid = advent::Grid::new(min_x, min_y, max_x, max_y, -1);
-    let mut td_grid = advent::Grid::new(min_x, min_y, max_x, max_y, -1);
+    let mut grid = Grid::new(min_x, min_y, max_x, max_y, -1);
+    let mut td_grid = Grid::new(min_x, min_y, max_x, max_y, -1);
     for x in min_x .. max_x+1 {
         for y in min_y .. max_y+1 {
             let mut mindex = -1;

@@ -3,7 +3,8 @@ use std::collections::{BinaryHeap, HashMap};
 use std::usize;
 use std::vec::Vec;
 extern crate advent;
-use advent::{Grid, read_input};
+use advent::read::read_input;
+use advent::grid::Grid;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum MapCell {
