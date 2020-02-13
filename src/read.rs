@@ -59,7 +59,7 @@ pub fn read_input<T: FromStr>() -> Vec<T> {
                 }
             },
             Err(e) => {
-                eprintln!("Error reading stdin: {}", e);
+                eprintln!("Error reading intup: {}", e);
                 break;
             },
         };
