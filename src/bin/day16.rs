@@ -6,10 +6,10 @@ extern crate advent;
 use advent::read::input_lines;
 
 struct Instruction {
-    opcode: u8,
-    a: u8,
-    b: u8,
-    c: u8,
+    opcode: usize,
+    a: usize,
+    b: usize,
+    c: usize,
 }
 impl Instruction {
     fn from_str(s: &str) -> Option<Self> {
@@ -19,10 +19,10 @@ impl Instruction {
             ).unwrap();
         }
         if let Some(caps) = RE_INST.captures(s) {
-            let o = caps.get(1).unwrap().as_str().parse::<u8>().unwrap();
-            let a = caps.get(2).unwrap().as_str().parse::<u8>().unwrap();
-            let b = caps.get(3).unwrap().as_str().parse::<u8>().unwrap();
-            let c = caps.get(4).unwrap().as_str().parse::<u8>().unwrap();
+            let o = caps.get(1).unwrap().as_str().parse::<usize>().unwrap();
+            let a = caps.get(2).unwrap().as_str().parse::<usize>().unwrap();
+            let b = caps.get(3).unwrap().as_str().parse::<usize>().unwrap();
+            let c = caps.get(4).unwrap().as_str().parse::<usize>().unwrap();
             Some(Self {
                 opcode: o,
                 a: a,
@@ -37,10 +37,13 @@ impl Instruction {
 }
 
 struct VM {
-    r: [u8; 4],
+    r: [usize; 4],
 }
 impl VM {
-    fn new(regs: &[u8; 4]) -> Self {
+    fn new() -> Self {
+        VM { r: [0; 4] }
+    }
+    fn with_reg(regs: &[usize; 4]) -> Self {
         VM { r: *regs }
     }
     fn exec(&mut self, op: &Op, inst: &Instruction) -> Result<(), &'static str> {
@@ -51,9 +54,9 @@ impl VM {
         } else if !op.b_immed && inst.b > 3 {
             Err("B out of range")
         } else {
-            let a = if op.a_immed { inst.a } else { self.r[inst.a as usize] };
-            let b = if op.b_immed { inst.b } else { self.r[inst.b as usize] };
-            self.r[inst.c as usize] = (op.op)(a, b);
+            let a = if op.a_immed { inst.a } else { self.r[inst.a] };
+            let b = if op.b_immed { inst.b } else { self.r[inst.b] };
+            self.r[inst.c] = (op.op)(a, b);
             Ok(())
         }
     }
@@ -62,7 +65,7 @@ impl VM {
 struct Op {
     a_immed: bool,
     b_immed: bool,
-    op: &'static dyn Fn(u8, u8) -> u8,
+    op: &'static dyn Fn(usize, usize) -> usize,
 }
 
 fn make_operations() -> HashMap<&'static str, Op> {
@@ -86,17 +89,17 @@ fn make_operations() -> HashMap<&'static str, Op> {
     m
 }
 
-fn registers_from_str(s: &str) -> Option<[u8; 4]> {
+fn registers_from_str(s: &str) -> Option<[usize; 4]> {
     lazy_static! {
         static ref RE_REGS: Regex = Regex::new(
             r"\[(\d+), (\d+), (\d+), (\d+)\]",
         ).unwrap();
     }
     if let Some(caps) = RE_REGS.captures(s) {
-        let a = caps.get(1).unwrap().as_str().parse::<u8>().unwrap();
-        let b = caps.get(2).unwrap().as_str().parse::<u8>().unwrap();
-        let c = caps.get(3).unwrap().as_str().parse::<u8>().unwrap();
-        let d = caps.get(4).unwrap().as_str().parse::<u8>().unwrap();
+        let a = caps.get(1).unwrap().as_str().parse::<usize>().unwrap();
+        let b = caps.get(2).unwrap().as_str().parse::<usize>().unwrap();
+        let c = caps.get(3).unwrap().as_str().parse::<usize>().unwrap();
+        let d = caps.get(4).unwrap().as_str().parse::<usize>().unwrap();
         Some([a, b, c, d])
     }
     else {
@@ -106,8 +109,8 @@ fn registers_from_str(s: &str) -> Option<[u8; 4]> {
 
 struct Sample {
     inst: Instruction,
-    before: [u8; 4],
-    after: [u8; 4],
+    before: [usize; 4],
+    after: [usize; 4],
 }
 
 fn main() {
@@ -138,7 +141,7 @@ fn main() {
     let count = samples.iter().fold(0, |count, sample| {
         let syms = test_sample(sample, &operations);
         for s in syms.iter() {
-            oper_table[sample.inst.opcode as usize].insert(s);
+            oper_table[sample.inst.opcode].insert(s);
         }
         if syms.len() >= 3 {
             count + 1
@@ -148,16 +151,46 @@ fn main() {
     });
     println!("Part 1: {}", count);
 
+    /*
     for (idx, set) in oper_table.iter().enumerate() {
         let ops: Vec<String> = set.iter().map(|s| (*s).to_string()).collect();
         println!("{}: {}", idx, ops.join(" "));
+    }*/
+
+    let mut final_oper_table: Vec<&'static str> = vec![&""; 16];
+    loop {
+        let mut item: Option<&'static str> = None;
+        {
+            if let Some((i, h)) = oper_table.iter().enumerate().find(|(_, h)| h.len() == 1) {
+                item = Some(*(h.iter().nth(0).unwrap()));
+                final_oper_table[i] = item.unwrap();
+            }
+        }
+        if let Some(item) = item {
+            for h in oper_table.iter_mut() {
+                h.remove(item);
+            }
+        }
+        else if oper_table.iter().all(|h| h.len() == 0) {
+            break;
+        }
+        else {
+            panic!("no opers remain that are narrowed down to one");
+        }
     }
+
+    let mut vm = VM::new();
+    for inst in program.iter() {
+        let op = final_oper_table[inst.opcode];
+        vm.exec(operations.get(op).unwrap(), inst).unwrap();
+    }
+    println!("Part 2: {}", vm.r[0]);
 }
 
 fn test_sample(sample: &Sample, operations: &HashMap<&'static str, Op>) -> Vec<&'static str> {
     let mut syms: Vec<&'static str> = Vec::new();
     for (sym, op) in operations {
-        let mut vm = VM::new(&sample.before);
+        let mut vm = VM::with_reg(&sample.before);
         if vm.exec(op, &sample.inst).is_ok() {
             if vm.r == sample.after {
                 syms.push(*sym);
