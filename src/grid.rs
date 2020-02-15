@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::io::Write;
 use std::ops::Range;
 use std::slice::Iter;
@@ -26,6 +27,42 @@ impl<T: Copy> Grid<T> {
             g.data.push(initial_val);
         }
         g
+    }
+
+    pub fn from_input<F>(input: &Vec<String>, default_val: T, padding: i32, mapfunc: F) -> Self
+            where F: Fn(char) -> T {
+        let width = input.iter().map(|s| s.len()).fold(0, |maxw, w| max(w, maxw)) as i32;
+        let height = input.len() as i32;
+        let mut y = 0i32;
+        let mut inst = Self::new(-padding, -padding, width-1+padding, height-1+padding, default_val);
+        for line in input.iter() {
+            for (ux, c) in line.chars().enumerate() {
+                let x = ux as i32;
+                inst.set(x, y, mapfunc(c));
+            }
+            y += 1;
+        }
+        inst
+    }
+
+    pub fn clone(&self) -> Self {
+        Grid {
+            min_x: self.min_x,
+            min_y: self.min_y,
+            x_size: self.x_size,
+            y_size: self.y_size,
+            data: self.data.clone(),
+        }
+    }
+
+    pub fn clone_without_data(&self, initial_val: T) -> Self {
+        Grid {
+            min_x: self.min_x,
+            min_y: self.min_y,
+            x_size: self.x_size,
+            y_size: self.y_size,
+            data: vec![initial_val; self.data.len()],
+        }
     }
 
     pub fn get(&self, x:i32, y:i32) -> T {
