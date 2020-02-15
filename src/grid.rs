@@ -1,3 +1,5 @@
+use std::io::Write;
+use std::ops::Range;
 use std::slice::Iter;
 use std::vec::Vec;
 
@@ -46,6 +48,24 @@ impl<T: Copy> Grid<T> {
 
     pub fn iter(&self) -> Iter<T> {
         self.data.iter()
+    }
+
+    pub fn x_bounds(&self) -> Range<i32> {
+        self.min_x .. self.min_x + self.x_size as i32
+    }
+
+    pub fn y_bounds(&self) -> Range<i32> {
+        self.min_y .. self.min_y + self.y_size as i32
+    }
+
+    pub fn dump_to_file<F>(&self, file: &mut dyn Write, formatter: F)
+            where F: Fn(T) -> char {
+        for y in self.min_y .. self.min_y + self.y_size as i32 {
+            for x in self.min_x .. self.min_x + self.x_size as i32 {
+                write!(file, "{}", formatter(self.get(x, y))).unwrap();
+            }
+            writeln!(file, "").unwrap();
+        }
     }
 
     pub fn print<F>(&self, formatter: F)
