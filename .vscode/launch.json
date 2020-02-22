@@ -328,6 +328,42 @@
             },
             "args": ["day17.input"],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day18'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day18",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day18",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day18.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day19'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day19",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day19",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day19.input"],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

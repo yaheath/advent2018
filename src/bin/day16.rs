@@ -78,8 +78,8 @@ fn make_operations() -> HashMap<&'static str, Op> {
     m.insert("bani", Op{a_immed:false, b_immed:true,  op:&|a, b| a & b});
     m.insert("borr", Op{a_immed:false, b_immed:false, op:&|a, b| a | b});
     m.insert("bori", Op{a_immed:false, b_immed:true,  op:&|a, b| a | b});
-    m.insert("setr", Op{a_immed:false, b_immed:false, op:&|a, _| a});
-    m.insert("seti", Op{a_immed:true,  b_immed:false, op:&|a, _| a});
+    m.insert("setr", Op{a_immed:false, b_immed:true,  op:&|a, _| a});
+    m.insert("seti", Op{a_immed:true,  b_immed:true,  op:&|a, _| a});
     m.insert("gtir", Op{a_immed:true,  b_immed:false, op:&|a, b| if a > b  { 1 } else { 0 }});
     m.insert("gtri", Op{a_immed:false, b_immed:true,  op:&|a, b| if a > b  { 1 } else { 0 }});
     m.insert("gtrr", Op{a_immed:false, b_immed:false, op:&|a, b| if a > b  { 1 } else { 0 }});
