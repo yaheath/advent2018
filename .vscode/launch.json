@@ -364,6 +364,60 @@
             },
             "args": ["day19.input"],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day20'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day20",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day20",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day20.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day21'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day21",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day21",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day21.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day22'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day22",
+                    "--package=advent"
+                ],
+                "filter": {
+                    "name": "day22",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day22.input"],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

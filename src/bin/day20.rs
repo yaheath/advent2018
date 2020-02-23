@@ -150,10 +150,10 @@ fn main() {
     let tree = parse(&input);
     let map = ElfMap::new();
     traverse(&map, &tree, (0, 0));
-    part1(&map);
+    bothparts(&map);
 }
 
-fn part1(map: &ElfMap) {
+fn bothparts(map: &ElfMap) {
     //println!("map has {} rooms", map.data.borrow().len());
     let mapdata = map.data.borrow();
     let mut dists: HashMap<(i32, i32), usize> = HashMap::new();
@@ -180,6 +180,8 @@ fn part1(map: &ElfMap) {
     }
     let maxcost = dists.iter().fold(0, |maxc, t| max(maxc, *t.1));
     println!("Part 1: {}", maxcost);
+    let count = dists.iter().fold(0, |count, t| if *t.1 >= 1000 { count + 1 } else { count });
+    println!("Part 2: {}", count);
 }
 
 fn traverse(map: &ElfMap, node: &Node, start: (i32, i32)) -> HashSet<(i32, i32)> {
