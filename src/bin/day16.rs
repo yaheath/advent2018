@@ -2,8 +2,7 @@
 use std::collections::{HashMap, HashSet};
 use std::vec::Vec;
 use regex::Regex;
-extern crate advent;
-use advent::read::input_lines;
+use advent_lib::read::input_lines;
 
 struct Instruction {
     opcode: usize,
@@ -119,18 +118,18 @@ fn main() {
     let mut samples: Vec<Sample> = Vec::new();
 
     loop {
-        let line = lineiter.next().unwrap().unwrap();
+        let line = lineiter.next().unwrap();
         if line.len() == 0 { break; }
         let before = registers_from_str(&line).unwrap();
-        let line = lineiter.next().unwrap().unwrap();
+        let line = lineiter.next().unwrap();
         let inst = Instruction::from_str(&line).unwrap();
-        let line = lineiter.next().unwrap().unwrap();
+        let line = lineiter.next().unwrap();
         let after = registers_from_str(&line).unwrap();
         samples.push(Sample { before: before, inst: inst, after: after });
         lineiter.next();
     }
     let program:Vec<Instruction> = lineiter
-        .map(|l| Instruction::from_str(&l.unwrap()))
+        .map(|l| Instruction::from_str(&l))
         .filter(|i| i.is_some())
         .map(|i| i.unwrap())
         .collect();

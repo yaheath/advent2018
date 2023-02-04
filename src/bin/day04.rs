@@ -1,8 +1,7 @@
 #[macro_use] extern crate lazy_static;
 use regex::Regex;
 use std::collections::HashMap;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 struct Guard {
     //id: i32,

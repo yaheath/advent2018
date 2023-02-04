@@ -2,9 +2,8 @@ use std::cmp::{max, Ordering};
 use std::collections::{BinaryHeap, HashMap};
 use std::usize;
 use std::vec::Vec;
-extern crate advent;
-use advent::read::read_input;
-use advent::grid::Grid;
+use advent_lib::read::read_input;
+use advent_lib::grid::Grid;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum MapCell {
@@ -32,13 +31,13 @@ impl MapCell {
 struct Unit {
     id: usize,
     is_elf: bool,
-    x: i32,
-    y: i32,
-    hp: i32,
-    attack: i32,
+    x: i64,
+    y: i64,
+    hp: i64,
+    attack: i64,
 }
 impl Unit {
-    fn new(id: usize, x: i32, y: i32, is_elf: bool, attack: i32) -> Self {
+    fn new(id: usize, x: i64, y: i64, is_elf: bool, attack: i64) -> Self {
         Self {
             id: id,
             is_elf: is_elf,
@@ -56,12 +55,12 @@ impl Unit {
 #[derive(Clone, Eq, PartialEq)]
 struct State {
     cost: usize,
-    x: i32,
-    y: i32,
-    path: Vec<(i32, i32)>,
+    x: i64,
+    y: i64,
+    path: Vec<(i64, i64)>,
 }
 impl State {
-    fn initial(x: i32, y: i32) -> Self {
+    fn initial(x: i64, y: i64) -> Self {
         State {
             cost: 0,
             x: x,
@@ -69,8 +68,8 @@ impl State {
             path: Vec::new(),
         }
     }
-    fn next_to(&self, x: i32, y: i32) -> Self {
-        let mut path: Vec<(i32, i32)> = Vec::with_capacity(self.path.len() + 1);
+    fn next_to(&self, x: i64, y: i64) -> Self {
+        let mut path: Vec<(i64, i64)> = Vec::with_capacity(self.path.len() + 1);
         for p in self.path.iter() {
             path.push(*p);
         }
@@ -110,7 +109,7 @@ impl PartialOrd for State {
 #[derive(Clone, Copy)]
 enum Action {
     None,
-    Move(i32, i32),
+    Move(i64, i64),
     Attack(usize),
     Finished,
 }
@@ -118,13 +117,13 @@ enum Action {
 struct Battle {
     grid: Grid<MapCell>,
     units: Vec<Unit>,
-    elf_attack: i32,
+    elf_attack: i64,
 }
 impl Battle {
-    fn new(input: &Vec<String>, elf_attack: i32) -> Self {
-        let width = input.iter().map(|s| s.len()).fold(0, |maxw, w| max(w, maxw)) as i32;
-        let height = input.len() as i32;
-        let mut y = 0i32;
+    fn new(input: &Vec<String>, elf_attack: i64) -> Self {
+        let width = input.iter().map(|s| s.len()).fold(0, |maxw, w| max(w, maxw)) as i64;
+        let height = input.len() as i64;
+        let mut y = 0i64;
         let mut inst = Self {
             grid: Grid::new(0, 0, width-1, height-1, MapCell::Empty),
             units: Vec::new(),
@@ -132,7 +131,7 @@ impl Battle {
         };
         for line in input.iter() {
             for (ux, c) in line.chars().enumerate() {
-                let x = ux as i32;
+                let x = ux as i64;
                 match c {
                     '#' => inst.put_wall(x, y),
                     'E' => inst.put_elf(x, y),
@@ -144,14 +143,14 @@ impl Battle {
         }
         inst
     }
-    fn put_wall(&mut self, x: i32, y: i32) {
+    fn put_wall(&mut self, x: i64, y: i64) {
         self.grid.set(x, y, MapCell::Wall);
     }
-    fn put_elf(&mut self, x: i32, y: i32) {
+    fn put_elf(&mut self, x: i64, y: i64) {
         self.grid.set(x, y, MapCell::Elf(self.units.len()));
         self.units.push(Unit::new(self.units.len(), x, y, true, self.elf_attack));
     }
-    fn put_goblin(&mut self, x: i32, y: i32) {
+    fn put_goblin(&mut self, x: i64, y: i64) {
         self.grid.set(x, y, MapCell::Goblin(self.units.len()));
         self.units.push(Unit::new(self.units.len(), x, y, false, 3));
     }
@@ -193,7 +192,7 @@ impl Battle {
         let unit = &self.units[unit_id];
 
         // See if there's an enemy we can move toward, using Dijkstra
-        let mut dists: HashMap<(i32, i32), usize> = HashMap::new();
+        let mut dists: HashMap<(i64, i64), usize> = HashMap::new();
         let mut heap = BinaryHeap::new();
         let mut mindist = usize::MAX;
         let mut candidates = BinaryHeap::new();
@@ -208,7 +207,7 @@ impl Battle {
                 continue;
             }
 
-            let mut check = |x: i32, y: i32| {
+            let mut check = |x: i64, y: i64| {
                 if let Some(_) = self.is_enemy(unit, x, y) {
                     if state.cost <= mindist {
                         candidates.push(state.clone());
@@ -263,7 +262,7 @@ impl Battle {
         }
     }
 
-    fn is_enemy(&self, unit: &Unit, x: i32, y:i32) -> Option<&Unit> {
+    fn is_enemy(&self, unit: &Unit, x: i64, y:i64) -> Option<&Unit> {
         if unit.is_elf {
             match self.grid.get(x, y) {
                 MapCell::Goblin(id) => Some(&self.units[id]),
@@ -277,7 +276,7 @@ impl Battle {
         }
     }
 
-    fn move_to(&mut self, unit_id: usize, x: i32, y: i32) {
+    fn move_to(&mut self, unit_id: usize, x: i64, y: i64) {
         let unit = &mut self.units[unit_id];
         assert_eq!(self.grid.get(x, y), MapCell::Empty);
         assert_eq!(MapCell::from_unit(unit), self.grid.get(unit.x, unit.y));
@@ -315,7 +314,7 @@ fn main() {
 
 fn part1(data: &Vec<String>) {
     let mut battle = Battle::new(&data, 3);
-    let mut turns = 0i32;
+    let mut turns = 0i64;
 
     while battle.step() {
         turns += 1;
@@ -325,9 +324,9 @@ fn part1(data: &Vec<String>) {
 }
 
 fn part2(data: &Vec<String>) {
-    let mut lower = 3i32;
-    let mut upper = 200i32;
-    let mut lastwin = 0i32;
+    let mut lower = 3i64;
+    let mut upper = 200i64;
+    let mut lastwin = 0i64;
     while lower + 1 < upper {
         let mid = lower + (upper - lower) / 2;
         //println!("testing {}", mid);

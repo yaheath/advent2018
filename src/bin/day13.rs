@@ -1,8 +1,7 @@
 use std::cmp::max;
 use std::vec::Vec;
-extern crate advent;
-use advent::read::read_input;
-use advent::grid::Grid;
+use advent_lib::read::read_input;
+use advent_lib::grid::Grid;
 
 #[derive(Clone, Copy, PartialEq)]
 enum Dir {
@@ -28,13 +27,13 @@ impl TrackCell {
 }
 
 struct Cart {
-    x: i32,
-    y: i32,
+    x: i64,
+    y: i64,
     dir: Dir,
     num_turns: u32,
 }
 impl Cart {
-    fn new(x: i32, y: i32, dir: Dir) -> Self {
+    fn new(x: i64, y: i64, dir: Dir) -> Self {
         Cart {
             x: x,
             y: y,
@@ -43,9 +42,9 @@ impl Cart {
         }
     }
     fn turn(&mut self) {
-        let m = (self.num_turns % 3) as i32;
+        let m = (self.num_turns % 3) as i64;
         self.num_turns += 1;
-        let nd = (self.dir as i32) + (m - 1);
+        let nd = (self.dir as i64) + (m - 1);
         self.dir = match nd {
            -1 => Dir::W,
             0 => Dir::N,
@@ -60,16 +59,16 @@ impl Cart {
 
 fn main() {
     let data = read_input::<String>();
-    let width = data.iter().map(|s| s.len()).fold(0, |maxw, w| max(w, maxw)) as i32;
-    let height = data.len() as i32;
+    let width = data.iter().map(|s| s.len()).fold(0, |maxw, w| max(w, maxw)) as i64;
+    let height = data.len() as i64;
     let mut grid = Grid::new(0, 0, width-1, height-1, TrackCell::Empty);
     let mut carts: Vec<Cart> = Vec::new();
 
-    let mut y = 0i32;
+    let mut y = 0i64;
     for line in data.iter() {
         let mut lastc = TrackCell::Empty;
         for (ux, c) in line.chars().enumerate() {
-            let x = ux as i32;
+            let x = ux as i64;
             let cell = match c {
                 '-' => TrackCell::Track(Dir::E, Dir::W),
                 '|' => TrackCell::Track(Dir::N, Dir::S),
@@ -177,7 +176,7 @@ fn step(
         match loc {
             TrackCell::Track(a, b) => {
                 if c.dir != a && c.dir != b {
-                    let diff = (c.dir as i32 - a as i32).abs();
+                    let diff = (c.dir as i64 - a as i64).abs();
                     if diff == 1 || diff == 3 {
                         c.dir = a;
                     } else {
@@ -189,7 +188,7 @@ fn step(
                 c.turn();
             },
             TrackCell::Empty => {
-                panic!(format!("empty cell {},{}", c.x, c.y));
+                panic!("empty cell {},{}", c.x, c.y);
             },
         }
         let crashed1 = search_coll(&mut carts, &c);

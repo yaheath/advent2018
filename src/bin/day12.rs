@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
-extern crate advent;
-use advent::read::read_input;
-use advent::number_line::NumberLine;
+extern crate advent2018;
+use advent_lib::read::read_input;
+use advent2018::number_line::NumberLine;
 
 enum InputItem {
     InitialState(Vec<bool>),

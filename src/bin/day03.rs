@@ -4,8 +4,7 @@ use std::collections::HashSet;
 use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 #[derive(Debug)]
 struct Claim {
@@ -65,8 +64,9 @@ impl FromStr for Claim {
 
 fn part1(data: &Vec<Claim>) {
     let mut overlaps: HashSet<String> = HashSet::new();
-    let mut allkeys: HashSet<String> = HashSet::new();
-    data.iter().for_each(|x| {allkeys.insert(x.name.to_string());});
+    let mut allkeys: HashSet<String> = HashSet::from_iter(
+        data.iter().map(|x| x.name.to_string())
+    );
     for i in 0 .. data.len() - 1 {
         for j in i + 1 .. data.len() {
             if let Some(o) = data[i].intersect(&data[j]) {

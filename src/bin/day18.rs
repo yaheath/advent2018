@@ -1,7 +1,6 @@
-extern crate advent;
 use std::collections::HashMap;
-use advent::read::read_input;
-use advent::grid::Grid;
+use advent_lib::read::read_input;
+use advent_lib::grid::Grid;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum MapCell {

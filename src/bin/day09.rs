@@ -1,11 +1,9 @@
 #[macro_use] extern crate lazy_static;
 use linked_list::{Cursor, LinkedList};
-use std::cmp::max;
 use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 struct Input {
     n_players: usize,
@@ -86,5 +84,5 @@ fn play_game(n_players: usize, max_marble: usize) -> usize {
         }
         player = (player + 1) % n_players;
     }
-    scores.iter().fold(0usize, |m, s| max(m, *s))
+    scores.into_iter().max().unwrap()
 }

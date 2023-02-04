@@ -84,6 +84,7 @@ impl FromStr for ProgramItem {
 enum RunResult {
     Ok,
     Halt,
+    InfiniteLoop,
     Err(&'static str),
 }
 
@@ -92,6 +93,7 @@ struct VM<'a> {
     ip: usize,
     prog: Vec<Instruction>,
     imap: &'a HashMap<usize, Op>,
+    counter: usize,
 }
 impl<'a> VM<'a> {
     fn new(instr_map: &'a HashMap<usize, Op>) -> Self {
@@ -100,6 +102,7 @@ impl<'a> VM<'a> {
             ip: 0,
             prog: Vec::new(),
             imap: instr_map,
+            counter: 0,
         }
     }
     fn load(&mut self, program: &Vec<ProgramItem>) {
@@ -129,6 +132,7 @@ impl<'a> VM<'a> {
             let a = if op.a_immed { inst.a } else { self.r[inst.a] };
             let b = if op.b_immed { inst.b } else { self.r[inst.b] };
             self.r[inst.c] = (op.op)(a, b);
+            self.counter += 1;
             Ok(())
         }
     }
@@ -140,6 +144,10 @@ impl<'a> VM<'a> {
             print!("");
         }
         let inst = self.prog[self.r[self.ip]];
+        if inst.opcode == Instruction::encode_opcode("seti") &&
+            inst.a == 0 && inst.c == 2 {
+                return RunResult::InfiniteLoop;
+        }
         match self.exec(&inst) {
             Ok(()) => {
                 self.r[self.ip] += 1;
@@ -152,9 +160,8 @@ impl<'a> VM<'a> {
         loop {
             let res = self.step();
             match res {
-                RunResult::Err(e) => return RunResult::Err(e),
-                RunResult::Halt => return RunResult::Halt,
                 RunResult::Ok => (),
+                _ => return res,
             };
             /*
             if verbose {
@@ -163,6 +170,11 @@ impl<'a> VM<'a> {
             }
             */
         }
+    }
+    fn reset(&mut self, regzero: usize) {
+        self.r = [0; NREGS];
+        self.r[0] = regzero;
+        self.counter = 0;
     }
 }
 
@@ -199,42 +211,19 @@ fn main() {
     let prog: Vec<ProgramItem> = read_input();
 
     part1(&prog, &operations);
-    part2(&prog, &operations);
+    //part2(&prog, &operations);
 }
 
 fn part1(prog: &Vec<ProgramItem>, operations: &HashMap<usize, Op>) {
     let mut vm = VM::new(operations);
     vm.load(prog);
-    match vm.run() {
-        RunResult::Err(e) => panic!("Error while running program: {}", e),
-        RunResult::Halt => println!("Part 1: {}", vm.r[0]),
-        _ => ()
-    };
-}
-
-fn part2(prog: &Vec<ProgramItem>, operations: &HashMap<usize, Op>) {
-    let mut vm = VM::new(operations);
-    vm.load(prog);
-    vm.r[0] = 1;
-    // The program calculates the sum of all divisors of a large number.
-    // It's too slow to complete in a reasonable amount of time, so we'll figure
-    // out what number it's using and then do it directly instead of by continuing
-    // to run the program.
-    // I can't take credit for figuring that out; I didn't have the patience to
-    // analyze what the program was doing and found it on reddit.
-    let mut last_ip = 0usize;
-    loop {
-        match vm.step() {
+    for n in 0..100 {
+        vm.reset(n);
+        match vm.run() {
             RunResult::Err(e) => panic!("Error while running program: {}", e),
-            RunResult::Halt => println!("Part 2: {}", vm.r[0]),
+            RunResult::Halt => println!("n={} count={}", n, vm.r[0]),
+            RunResult::InfiniteLoop => println!("n={} infiniteloop", n),
             _ => ()
-        };
-        // when the IP goes backward the first time, the program is done initializing
-        // the number it wants to factor, which will be in register 4
-        if vm.r[vm.ip] < last_ip { break; }
-        last_ip = vm.r[vm.ip];
-    }
-    let bignum = vm.r[4];
-    let sum:usize = (1..=bignum).filter(|i| bignum % i == 0).sum();
-    println!("Part 2: {}", sum);
+        }
+    };
 }

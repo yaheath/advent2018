@@ -2,8 +2,7 @@ use std::cell::RefCell;
 use std::cmp::{max, Ordering};
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::vec::Vec;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 #[derive(Debug, PartialEq)]
 enum Node<'a> {

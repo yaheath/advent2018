@@ -3,14 +3,13 @@ use std::cmp::{max, min};
 use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
-extern crate advent;
-use advent::read::read_input;
-use advent::grid::Grid;
+use advent_lib::read::read_input;
+use advent_lib::grid::Grid;
 
 #[derive(Debug)]
 struct Coord {
-    x: i32,
-    y: i32,
+    x: i64,
+    y: i64,
 }
 
 impl FromStr for Coord {
@@ -22,8 +21,8 @@ impl FromStr for Coord {
         match RE.captures(s) {
             None => return Err(format!("invalid input: {}", s)),
             Some(caps) => {
-                let x:i32 = caps.get(1).unwrap().as_str().parse::<i32>().unwrap();
-                let y:i32 = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();
+                let x:i64 = caps.get(1).unwrap().as_str().parse::<i64>().unwrap();
+                let y:i64 = caps.get(2).unwrap().as_str().parse::<i64>().unwrap();
                 return Ok(Coord {x: x, y: y});
             },
         }
@@ -35,16 +34,16 @@ fn main() {
     bothparts(&data);
 }
 
-const MARGIN:i32 = 50;
+const MARGIN:i64 = 50;
 
 fn bothparts(data: &Vec<Coord>) {
-    let min_x: i32 = data.iter().map(|c| c.x)
+    let min_x: i64 = data.iter().map(|c| c.x)
         .fold(100000, |acc, v| min(acc, v)) - MARGIN;
-    let min_y: i32 = data.iter().map(|c| c.y)
+    let min_y: i64 = data.iter().map(|c| c.y)
         .fold(100000, |acc, v| min(acc, v)) - MARGIN;
-    let max_x: i32 = data.iter().map(|c| c.x)
+    let max_x: i64 = data.iter().map(|c| c.x)
         .fold(0, |acc, v| max(acc, v)) + MARGIN;
-    let max_y: i32 = data.iter().map(|c| c.y)
+    let max_y: i64 = data.iter().map(|c| c.y)
         .fold(0, |acc, v| max(acc, v)) + MARGIN;
     let mut grid = Grid::new(min_x, min_y, max_x, max_y, -1);
     let mut td_grid = Grid::new(min_x, min_y, max_x, max_y, -1);
@@ -58,7 +57,7 @@ fn bothparts(data: &Vec<Coord>) {
                 totaldist += dist;
                 if mindist == -1 || mindist > dist {
                     mindist = dist;
-                    mindex = idx as i32;
+                    mindex = idx as i64;
                 }
                 else if mindist == dist {
                     mindex = -1;
@@ -69,7 +68,7 @@ fn bothparts(data: &Vec<Coord>) {
         }
     }
 
-    let mut counts = vec![0i32; data.len()];
+    let mut counts = vec![0i64; data.len()];
     for x in min_x .. max_x+1 {
         let val = grid.get(x, min_y);
         if val >= 0 {

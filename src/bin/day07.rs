@@ -4,8 +4,7 @@ use std::collections::{BTreeSet, HashMap, HashSet};
 use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 #[derive(Debug)]
 struct Step {
@@ -41,8 +40,7 @@ fn part1(deps: &HashMap<char, Vec<char>>,
             queue.insert(*key);
         }
     }
-    while !queue.is_empty() {
-        let item = *queue.iter().next().unwrap();
+    while let Some(item) = queue.pop_first() {
         out.push(item);
         done.insert(item);
         if revdeps.contains_key(&item) {
@@ -52,7 +50,6 @@ fn part1(deps: &HashMap<char, Vec<char>>,
                 }
             }
         }
-        queue.remove(&item);
     }
     println!("Part 1: {}", out);
 }
@@ -99,9 +96,8 @@ fn part2(deps: &HashMap<char, Vec<char>>,
         let maybeworker = workers.iter_mut().find(|w| w.is_idle());
         if !queue.is_empty() && maybeworker.is_some() {
             let worker = maybeworker.unwrap();
-            let item = *queue.iter().next().unwrap();
+            let item = queue.pop_first().unwrap();
             worker.start(item, time);
-            queue.remove(&item);
             continue;
         }
         else {

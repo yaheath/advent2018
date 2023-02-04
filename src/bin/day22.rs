@@ -3,8 +3,7 @@ use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 use std::str::FromStr;
 use regex::Regex;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 enum Input {
     Depth(u64),

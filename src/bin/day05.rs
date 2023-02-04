@@ -1,8 +1,7 @@
 #[macro_use] extern crate lazy_static;
 use regex::Regex;
 use std::vec::Vec;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 fn main() {
     let input: Vec<String> = read_input::<String>();

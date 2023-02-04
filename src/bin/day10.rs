@@ -3,16 +3,15 @@ use std::cmp::{max, min};
 use std::str::FromStr;
 use std::vec::Vec;
 use regex::Regex;
-extern crate advent;
-use advent::read::read_input;
-use advent::grid::Grid;
+use advent_lib::read::read_input;
+use advent_lib::grid::Grid;
 
 #[derive(Clone, Copy)]
 struct Point {
-    x_loc: i32,
-    y_loc: i32,
-    x_vel: i32,
-    y_vel: i32,
+    x_loc: i64,
+    y_loc: i64,
+    x_vel: i64,
+    y_vel: i64,
 }
 
 impl FromStr for Point {
@@ -26,10 +25,10 @@ impl FromStr for Point {
         match RE.captures(s) {
             None => return Err(format!("invalid input: {}", s)),
             Some(caps) => {
-                let x_loc = caps.get(1).unwrap().as_str().parse::<i32>().unwrap();
-                let y_loc = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();
-                let x_vel = caps.get(3).unwrap().as_str().parse::<i32>().unwrap();
-                let y_vel = caps.get(4).unwrap().as_str().parse::<i32>().unwrap();
+                let x_loc = caps.get(1).unwrap().as_str().parse::<i64>().unwrap();
+                let y_loc = caps.get(2).unwrap().as_str().parse::<i64>().unwrap();
+                let x_vel = caps.get(3).unwrap().as_str().parse::<i64>().unwrap();
+                let y_vel = caps.get(4).unwrap().as_str().parse::<i64>().unwrap();
                 return Ok(Point {
                     x_loc: x_loc, y_loc: y_loc, x_vel: x_vel, y_vel: y_vel,
                 });
@@ -49,11 +48,11 @@ fn bothparts(data: &Vec<Point>) {
         stars.push(*s);
     }
     let mut area:i64 = -1;
-    let mut minx:i32;
-    let mut miny:i32;
-    let mut maxx:i32;
-    let mut maxy:i32;
-    let mut elapsed:i32 = 0;
+    let mut minx:i64;
+    let mut miny:i64;
+    let mut maxx:i64;
+    let mut maxy:i64;
+    let mut elapsed:i64 = 0;
     loop {
         minx = stars[0].x_loc;
         miny = stars[0].y_loc;

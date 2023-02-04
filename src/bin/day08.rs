@@ -1,8 +1,7 @@
 use std::slice::Iter;
 use std::str::FromStr;
 use std::vec::Vec;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 struct Input {
     list: Vec<usize>,

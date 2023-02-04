@@ -1,6 +1,5 @@
 use std::vec::Vec;
-extern crate advent;
-use advent::read::read_input;
+use advent_lib::read::read_input;
 
 struct State {
     scores: Vec<usize>,

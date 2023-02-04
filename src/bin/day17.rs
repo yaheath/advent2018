@@ -5,13 +5,12 @@ use std::io::BufWriter;
 use std::ops::{Range, RangeInclusive};
 use std::str::FromStr;
 use regex::Regex;
-extern crate advent;
-use advent::read::read_input;
-use advent::grid::Grid;
+use advent_lib::read::read_input;
+use advent_lib::grid::Grid;
 
 enum InputItem {
-    Row(RangeInclusive<i32>, i32),
-    Col(i32, RangeInclusive<i32>),
+    Row(RangeInclusive<i64>, i64),
+    Col(i64, RangeInclusive<i64>),
 }
 
 impl FromStr for InputItem {
@@ -28,15 +27,15 @@ impl FromStr for InputItem {
             ).unwrap();
         }
         if let Some(caps) = RE_ROW.captures(s) {
-            let y = caps.get(1).unwrap().as_str().parse::<i32>().unwrap();
-            let x1 = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();
-            let x2 = caps.get(3).unwrap().as_str().parse::<i32>().unwrap();
+            let y = caps.get(1).unwrap().as_str().parse::<i64>().unwrap();
+            let x1 = caps.get(2).unwrap().as_str().parse::<i64>().unwrap();
+            let x2 = caps.get(3).unwrap().as_str().parse::<i64>().unwrap();
             return Ok(InputItem::Row(x1..=x2, y));
         }
         if let Some(caps) = RE_COL.captures(s) {
-            let x = caps.get(1).unwrap().as_str().parse::<i32>().unwrap();
-            let y1 = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();
-            let y2 = caps.get(3).unwrap().as_str().parse::<i32>().unwrap();
+            let x = caps.get(1).unwrap().as_str().parse::<i64>().unwrap();
+            let y1 = caps.get(2).unwrap().as_str().parse::<i64>().unwrap();
+            let y2 = caps.get(3).unwrap().as_str().parse::<i64>().unwrap();
             return Ok(InputItem::Col(x, y1..=y2));
         }
         Err("invalid input line".to_string())
@@ -58,30 +57,30 @@ impl<T: Copy> WrappedGrid<T> {
     fn new(grid: Grid<T>) -> Self {
         WrappedGrid{ grid: RefCell::new(grid) }
     }
-    fn get(&self, x:i32, y:i32) -> T {
+    fn get(&self, x:i64, y:i64) -> T {
         self.grid.borrow().get(x, y)
     }
-    fn set(&self, x:i32, y:i32, val:T) {
+    fn set(&self, x:i64, y:i64, val:T) {
         self.grid.borrow_mut().set(x, y, val);
     }
     /*
-    fn x_bounds(&self) -> Range<i32> {
+    fn x_bounds(&self) -> Range<i64> {
         self.grid.borrow().x_bounds()
     }*/
-    fn y_bounds(&self) -> Range<i32> {
+    fn y_bounds(&self) -> Range<i64> {
         self.grid.borrow().y_bounds()
     }
 }
 
 fn main() {
     let input = read_input::<InputItem>();
-    let (minx, maxx) = input.iter().fold((std::i32::MAX, 0),
+    let (minx, maxx) = input.iter().fold((std::i64::MAX, 0),
         |(minx, maxx), item| match item {
             InputItem::Row(x, _) => (min(minx, *x.start()), max(maxx, *x.end())),
             InputItem::Col(x, _) => (min(minx, *x), max(maxx, *x)),
         }
     );
-    let (miny, maxy) = input.iter().fold((std::i32::MAX, 0),
+    let (miny, maxy) = input.iter().fold((std::i64::MAX, 0),
         |(miny, maxy), item| match item {
             InputItem::Row(_, y) => (min(miny, *y), max(maxy, *y)),
             InputItem::Col(_, y) => (min(miny, *y.start()), max(maxy, *y.end())),
@@ -117,7 +116,7 @@ fn main() {
     println!("Part 2: {}", n_w);
 }
 
-fn go_vertical(start_x:i32, start_y:i32, grid: &WrappedGrid<WCell>) -> bool {
+fn go_vertical(start_x:i64, start_y:i64, grid: &WrappedGrid<WCell>) -> bool {
     //dump_grid(&grid.grid.borrow());
     let x = start_x;
     let mut y = start_y;
@@ -139,7 +138,7 @@ fn go_vertical(start_x:i32, start_y:i32, grid: &WrappedGrid<WCell>) -> bool {
     }
 }
 
-fn go_horiz(start_x:i32, start_y:i32, grid: &WrappedGrid<WCell>) -> bool {
+fn go_horiz(start_x:i64, start_y:i64, grid: &WrappedGrid<WCell>) -> bool {
     //dump_grid(&grid.grid.borrow());
     let mut x = start_x;
     let y = start_y;
