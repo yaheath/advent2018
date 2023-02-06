@@ -6,12 +6,12 @@ use lazy_static::lazy_static;
 
 const NREGS: usize = 6;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Instruction {
-    opcode: &'static str,
-    a: usize,
-    b: usize,
-    c: usize,
+    pub opcode: &'static str,
+    pub a: usize,
+    pub b: usize,
+    pub c: usize,
 }
 impl Instruction {
     fn from_str(s: &str) -> Option<Self> {
@@ -80,13 +80,16 @@ impl FromStr for ProgramItem {
 pub enum RunResult {
     Ok,
     Halt,
+    Break(Instruction),
     Err(&'static str),
 }
 
 pub struct VM {
-    r: [usize; NREGS],
-    ip: usize,
-    prog: Vec<Instruction>,
+    pub r: [usize; NREGS],
+    pub ip: usize,
+    pub prog: Vec<Instruction>,
+    break_on_access: Option<usize>,
+    is_at_breakpoint: bool,
 }
 impl VM {
     pub fn new() -> Self {
@@ -94,6 +97,8 @@ impl VM {
             r: [0; NREGS],
             ip: 0,
             prog: Vec::new(),
+            break_on_access: None,
+            is_at_breakpoint: false,
         }
     }
     pub fn load(&mut self, program: &Vec<ProgramItem>) {
@@ -107,6 +112,9 @@ impl VM {
                     }
             }
         }
+    }
+    pub fn set_breakpoint(&mut self, register: usize) {
+        self.break_on_access = Some(register);
     }
     pub fn exec(&mut self, inst: &Instruction) -> Result<(), &'static str> {
         if !OPERATIONS.contains_key(&inst.opcode) {
@@ -130,10 +138,19 @@ impl VM {
         if self.r[self.ip] >= self.prog.len() {
             return RunResult::Halt;
         }
-        if self.r[self.ip] == 6 {
-            print!("");
-        }
         let inst = self.prog[self.r[self.ip]];
+        if let Some(brk) = self.break_on_access {
+            if self.is_at_breakpoint {
+                self.is_at_breakpoint = false;
+            }
+            else {
+                let op = &OPERATIONS[&inst.opcode];
+                if !op.a_immed && inst.a == brk || !op.b_immed && inst.b == brk {
+                    self.is_at_breakpoint = true;
+                    return RunResult::Break(inst);
+                }
+            }
+        }
         match self.exec(&inst) {
             Ok(()) => {
                 self.r[self.ip] += 1;
@@ -146,9 +163,8 @@ impl VM {
         loop {
             let res = self.step();
             match res {
-                RunResult::Err(e) => return RunResult::Err(e),
-                RunResult::Halt => return RunResult::Halt,
                 RunResult::Ok => (),
+                _ => return res,
             };
             /*
             if verbose {

@@ -7,16 +7,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in library 'advent'",
+            "name": "Debug unit tests in library 'advent2018'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
                     "--lib",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
-                    "name": "advent",
+                    "name": "advent2018",
                     "kind": "lib"
                 }
             },
@@ -31,7 +31,7 @@
                 "args": [
                     "build",
                     "--bin=day01",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day01",
@@ -49,7 +49,7 @@
                 "args": [
                     "build",
                     "--bin=day02",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day02",
@@ -67,7 +67,7 @@
                 "args": [
                     "build",
                     "--bin=day03",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day03",
@@ -85,7 +85,7 @@
                 "args": [
                     "build",
                     "--bin=day04",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day04",
@@ -103,7 +103,7 @@
                 "args": [
                     "build",
                     "--bin=day05",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day05",
@@ -121,7 +121,7 @@
                 "args": [
                     "build",
                     "--bin=day06",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day06",
@@ -139,7 +139,7 @@
                 "args": [
                     "build",
                     "--bin=day07",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day07",
@@ -157,7 +157,7 @@
                 "args": [
                     "build",
                     "--bin=day08",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day08",
@@ -175,7 +175,7 @@
                 "args": [
                     "build",
                     "--bin=day09",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day09",
@@ -193,7 +193,7 @@
                 "args": [
                     "build",
                     "--bin=day10",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day10",
@@ -211,7 +211,7 @@
                 "args": [
                     "build",
                     "--bin=day11",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day11",
@@ -229,7 +229,7 @@
                 "args": [
                     "build",
                     "--bin=day12",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day12",
@@ -247,7 +247,7 @@
                 "args": [
                     "build",
                     "--bin=day13",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day13",
@@ -265,7 +265,7 @@
                 "args": [
                     "build",
                     "--bin=day14",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day14",
@@ -283,7 +283,7 @@
                 "args": [
                     "build",
                     "--bin=day15",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day15",
@@ -301,7 +301,7 @@
                 "args": [
                     "build",
                     "--bin=day16",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day16",
@@ -319,7 +319,7 @@
                 "args": [
                     "build",
                     "--bin=day17",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day17",
@@ -337,7 +337,7 @@
                 "args": [
                     "build",
                     "--bin=day18",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day18",
@@ -355,7 +355,7 @@
                 "args": [
                     "build",
                     "--bin=day19",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day19",
@@ -373,7 +373,7 @@
                 "args": [
                     "build",
                     "--bin=day20",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day20",
@@ -391,7 +391,7 @@
                 "args": [
                     "build",
                     "--bin=day21",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day21",
@@ -409,7 +409,7 @@
                 "args": [
                     "build",
                     "--bin=day22",
-                    "--package=advent"
+                    "--package=advent2018"
                 ],
                 "filter": {
                     "name": "day22",
