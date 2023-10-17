@@ -116,23 +116,23 @@ impl VM {
     pub fn set_breakpoint(&mut self, register: usize) {
         self.break_on_access = Some(register);
     }
-    pub fn exec(&mut self, inst: &Instruction) -> Result<(), &'static str> {
-        if !OPERATIONS.contains_key(&inst.opcode) {
-            return Err("Illegal instruction");
-        }
+    pub fn exec(&mut self, inst: &Instruction) /* -> Result<(), &'static str> */ {
+        // if !OPERATIONS.contains_key(&inst.opcode) {
+        //     return Err("Illegal instruction");
+        // }
         let op = &OPERATIONS[&inst.opcode];
-        if inst.c >= NREGS {
-            Err("C out of range")
-        } else if !op.a_immed && inst.a >= NREGS {
-            Err("A out of range")
-        } else if !op.b_immed && inst.b >= NREGS {
-            Err("B out of range")
-        } else {
+        // if inst.c >= NREGS {
+        //     Err("C out of range")
+        // } else if !op.a_immed && inst.a >= NREGS {
+        //     Err("A out of range")
+        // } else if !op.b_immed && inst.b >= NREGS {
+        //     Err("B out of range")
+        // } else {
             let a = if op.a_immed { inst.a } else { self.r[inst.a] };
             let b = if op.b_immed { inst.b } else { self.r[inst.b] };
             self.r[inst.c] = (op.op)(a, b);
-            Ok(())
-        }
+        //    Ok(())
+        //}
     }
     pub fn step(&mut self) -> RunResult {
         if self.r[self.ip] >= self.prog.len() {
@@ -151,13 +151,14 @@ impl VM {
                 }
             }
         }
-        match self.exec(&inst) {
-            Ok(()) => {
+        //match self.exec(&inst) {
+        //    Ok(()) => {
+        self.exec(&inst);
                 self.r[self.ip] += 1;
                 RunResult::Ok
-            },
-            Err(e) => RunResult::Err(e),
-        }
+        //    },
+        //    Err(e) => RunResult::Err(e),
+        //}
     }
     pub fn run(&mut self) -> RunResult {
         loop {

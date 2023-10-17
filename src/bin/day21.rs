@@ -20,6 +20,7 @@ fn main() {
                 let target = if inst.a == 0 { vm.r[inst.b] } else { vm.r[inst.a] };
                 if values.len() == 0 {
                     println!("Part 1: {target}");
+                    println!("NOTE: getting the part 2 answer will take a long time");
                 }
                 if values.contains(&target) {
                     println!("Part 2: {last}");

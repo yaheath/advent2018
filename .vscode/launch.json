@@ -4,6 +4,8 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+
         {
             "type": "lldb",
             "request": "launch",
@@ -417,6 +419,24 @@
                 }
             },
             "args": ["day22.input"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'day23'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=day23",
+                    "--package=advent2018"
+                ],
+                "filter": {
+                    "name": "day23",
+                    "kind": "bin"
+                }
+            },
+            "args": ["day23.testinput"],
             "cwd": "${workspaceFolder}"
         }
     ]
