@@ -1,73 +1,57 @@
-use std::collections::HashMap;
-use std::option::Option;
 use std::vec::Vec;
+use counter::Counter;
+use itertools::Itertools;
 use advent_lib::read::read_input;
 
-fn part1(input: &Vec<String>) {
-    let mut twos: i32 = 0;
-    let mut threes: i32 = 0;
-    let mut chars: HashMap<char, i32> = HashMap::new();
-    for label in input.iter() {
-        for c in label.chars() {
-            let val = chars.entry(c).or_insert(0);
-            *val += 1;
-        }
-        let mut havetwo = false;
-        let mut havethree = false;
-        for (_, val) in chars.iter() {
-            if *val == 2 {
-                havetwo = true;
-            }
-            if *val == 3 {
-                havethree = true;
-            }
-        }
-        if havetwo {
-            twos += 1;
-        }
-        if havethree {
-            threes += 1;
-        }
-        chars.clear();
-    }
-    println!("Part 1: {}", twos * threes);
+fn part1(input: &Vec<String>) -> i32 {
+    let (twos, threes) = input.iter()
+        .map(|line| line.chars().collect::<Counter<_>>())
+        .map(|counter| counter.values().fold((0,0), |(two,thr), v| match v {
+            2 => ((two+1).min(1), thr),
+            3 => (two, (thr+1).min(1)),
+            _ => (two, thr),
+        }))
+        .fold((0,0), |a,b| (a.0+b.0, a.1+b.1));
+    twos * threes
 }
 
-fn part2(input: &Vec<String>) {
-    for i in 0..(input.len()-1) {
-        for j in (i+1)..input.len() {
-            match check_string_diff(&input[i], &input[j]) {
-                Some(common) => {
-                    println!("Part 2: {}", common);
-                    return;
-                },
-                None => (),
-            }
-        }
-    }
+fn part2(input: &Vec<String>) -> String {
+    input.iter()
+        .cartesian_product(input.iter())
+        .filter_map(|(a, b)| check_string_diff(a, b))
+        .next()
+        .unwrap()
 }
 
 fn check_string_diff(s1: &String, s2: &String) -> Option<String> {
-    let mut ndiff: usize = 0;
-    let mut common: String = String::new();
-    let mut s1_itr = s1.chars();
-    for s2c in s2.chars() {
-        let s1c = s1_itr.next().unwrap();
-        if s1c != s2c {
-            ndiff += 1;
-        }
-        else {
-            common.push(s1c);
-        }
+    let common: String = s1.chars()
+        .zip(s2.chars())
+        .filter_map(|(c1, c2)| if c1 == c2 { Some(c1) } else { None })
+        .collect();
+    if common.len() == s1.len() - 1 {
+        Some(common)
     }
-    if ndiff != 1 {
-        return None;
+    else {
+        None
     }
-    return Some(common);
 }
 
 fn main() {
     let input: Vec<String> = read_input();
-    part1(&input);
-    part2(&input);
+    println!("Part 1: {}", part1(&input));
+    println!("Part 2: {}", part2(&input));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day02_test() {
+        let input: Vec<String> = test_input(include_str!("day02.testinput"));
+        assert_eq!(part1(&input), 12);
+        let input: Vec<String> = test_input(include_str!("day02.testinput2"));
+        assert_eq!(part2(&input), String::from("fgij"));
+    }
 }

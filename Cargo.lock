@@ -7,6 +7,7 @@ name = "advent2018"
 version = "0.1.0"
 dependencies = [
  "advent_lib",
+ "counter",
  "itertools 0.10.5",
  "lazy_static",
  "linked-list",
@@ -15,10 +16,10 @@ dependencies = [
 
 [[package]]
 name = "advent_lib"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "crossterm",
- "itertools 0.10.5",
+ "itertools 0.11.0",
  "lazy_static",
  "num",
  "rand",
@@ -64,6 +65,15 @@ name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "counter"
+version = "0.5.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2d458e66999348f56fd3ffcfbb7f7951542075ca8359687c703de6500c1ddccd"
+dependencies = [
+ "num-traits",
+]
 
 [[package]]
 name = "crossterm"

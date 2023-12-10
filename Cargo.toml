@@ -10,5 +10,6 @@ edition = "2021"
 regex = "1"
 lazy_static = "1"
 linked-list = "0"
-advent_lib = { version = "0.1.0", path = "../advent_lib" }
+advent_lib = { version = "0.2.0", path = "../advent_lib" }
 itertools = "0.10.5"
+counter = "0.5.7"
