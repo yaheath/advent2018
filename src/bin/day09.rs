@@ -1,7 +1,7 @@
-#[macro_use] extern crate lazy_static;
-use linked_list::{Cursor, LinkedList};
 use std::str::FromStr;
 use std::vec::Vec;
+use lazy_static::lazy_static;
+use linked_list::{Cursor, LinkedList};
 use regex::Regex;
 use advent_lib::read::read_input;
 
@@ -26,22 +26,6 @@ impl FromStr for Input {
             },
         }
     }
-}
-
-fn main() {
-    let data = read_input::<Input>();
-    part1(&data[0]);
-    part2(&data[0]);
-}
-
-fn part1(data: &Input) {
-    let max_score = play_game(data.n_players, data.max_marble);
-    println!("Part 1: {}", max_score);
-}
-
-fn part2(data: &Input) {
-    let max_score = play_game(data.n_players, data.max_marble * 100);
-    println!("Part 2: {}", max_score);
 }
 
 // Similar to cursor.seek_forward() but will automatically skip the
@@ -85,4 +69,43 @@ fn play_game(n_players: usize, max_marble: usize) -> usize {
         player = (player + 1) % n_players;
     }
     scores.into_iter().max().unwrap()
+}
+
+fn part1(data: &Input) -> usize {
+    play_game(data.n_players, data.max_marble)
+}
+
+fn part2(data: &Input) -> usize {
+    play_game(data.n_players, data.max_marble * 100)
+}
+
+fn main() {
+    let data = read_input::<Input>();
+    println!("Part 1: {}", part1(&data[0]));
+    println!("Part 2: {}", part2(&data[0]));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day09_test() {
+        let input: Vec<Input> = test_input("10 players; last marble is worth 1618 points".into());
+        assert_eq!(part1(&input[0]), 8317);
+        assert_eq!(part2(&input[0]), 74765078);
+        let input: Vec<Input> = test_input("13 players; last marble is worth 7999 points".into());
+        assert_eq!(part1(&input[0]), 146373);
+        assert_eq!(part2(&input[0]), 1406506154);
+        let input: Vec<Input> = test_input("17 players; last marble is worth 1104 points".into());
+        assert_eq!(part1(&input[0]), 2764);
+        assert_eq!(part2(&input[0]), 20548882);
+        let input: Vec<Input> = test_input("21 players; last marble is worth 6111 points".into());
+        assert_eq!(part1(&input[0]), 54718);
+        assert_eq!(part2(&input[0]), 507583214);
+        let input: Vec<Input> = test_input("30 players; last marble is worth 5807 points".into());
+        assert_eq!(part1(&input[0]), 37305);
+        assert_eq!(part2(&input[0]), 320997431);
+    }
 }

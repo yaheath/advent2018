@@ -3,7 +3,7 @@ use counter::Counter;
 use itertools::Itertools;
 use advent_lib::read::read_input;
 
-fn part1(input: &Vec<String>) -> i32 {
+fn part1(input: &[String]) -> i32 {
     let (twos, threes) = input.iter()
         .map(|line| line.chars().collect::<Counter<_>>())
         .map(|counter| counter.values().fold((0,0), |(two,thr), v| match v {
@@ -15,15 +15,15 @@ fn part1(input: &Vec<String>) -> i32 {
     twos * threes
 }
 
-fn part2(input: &Vec<String>) -> String {
+fn part2(input: &[String]) -> String {
     input.iter()
-        .cartesian_product(input.iter())
+        .tuple_combinations()
         .filter_map(|(a, b)| check_string_diff(a, b))
         .next()
         .unwrap()
 }
 
-fn check_string_diff(s1: &String, s2: &String) -> Option<String> {
+fn check_string_diff(s1: &str, s2: &str) -> Option<String> {
     let common: String = s1.chars()
         .zip(s2.chars())
         .filter_map(|(c1, c2)| if c1 == c2 { Some(c1) } else { None })

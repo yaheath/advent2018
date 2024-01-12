@@ -1,38 +1,29 @@
-#[macro_use] extern crate lazy_static;
-use regex::Regex;
 use std::collections::HashMap;
+use itertools::Itertools;
+use lazy_static::lazy_static;
+use regex::Regex;
 use advent_lib::read::read_input;
 
 struct Guard {
-    //id: i32,
+    id: i32,
     log: HashMap<String, [bool; 60]>,
 }
 
 impl Guard {
     fn time_asleep(&self) -> usize {
-        let mut minutes: usize = 0;
-        for (_, sleep) in self.log.iter() {
-            for b in sleep.iter() {
-                if *b {
-                    minutes += 1;
-                }
-            }
-        }
-        minutes
+        self.log.values()
+            .map(|sleep| sleep.iter().filter(|b| **b).count())
+            .sum()
     }
 }
 
-fn main() {
-    let mut data = read_input::<String>();
-    data.sort_unstable();
-
+fn setup(input: &[String]) -> HashMap<i32, Guard> {
     let mut cur_guard_id: i32 = -1;
     let mut sleeping: bool = false;
     let mut sleepstart: usize = 0;
     let mut guards: HashMap<i32, Guard> = HashMap::new();
 
-    for row in data {
-        let row: String = row.to_string();
+    for row in input.iter().sorted_unstable() {
         lazy_static! {
             static ref LINE_RE: Regex = Regex::new(r"\[([-0-9]+) (\d\d):(\d\d)\] (.*)\n?").unwrap();
         }
@@ -43,7 +34,7 @@ fn main() {
         let hour: usize;
         let minute: usize;
         let action: String;
-        match LINE_RE.captures(&row) {
+        match LINE_RE.captures(row) {
             None => {
                 eprintln!("invalid input: {}", row);
                 continue;
@@ -73,7 +64,7 @@ fn main() {
                 else {
                     assert!(cur_guard_id != -1);
                     let cur_guard = guards.entry(cur_guard_id)
-                        .or_insert(Guard { log: HashMap::new() });
+                        .or_insert(Guard { id: cur_guard_id, log: HashMap::new() });
                     if a == "falls" {
                         sleeping = true;
                         sleepstart = if hour == 0 { minute } else { 0 };
@@ -96,59 +87,56 @@ fn main() {
             }
         }
     }
-
-    part1(&guards);
-    part2(&guards);
+    guards
 }
 
-fn part1(guards: &HashMap<i32, Guard>) {
-    let mut max: usize = 0;
-    let mut guard_id = 0;
-    for (id, guard) in guards.iter() {
-        let time = guard.time_asleep();
-        if time > max {
-            max = time;
-            guard_id = *id;
-        }
-    }
-    let guard = guards.get(&guard_id).unwrap();
-    let mut maxminute: i32 = 0;
-    let mut maxsum: i32 = -1;
-    for m in 0..60 {
-        let mut sum = 0;
-        for (_, log) in guard.log.iter() {
-            if log[m as usize] { sum += 1; }
-        }
-        if sum > maxsum {
-            maxsum = sum;
-            maxminute = m;
-        }
-    }
-    println!("Part 1: {}", maxminute * guard_id);
+fn part1(guards: &HashMap<i32, Guard>) -> i32 {
+    let guard = guards.values()
+        .map(|g| (g, g.time_asleep()))
+        .max_by_key(|(_,t)| *t)
+        .map(|(g, _)| g)
+        .unwrap();
+    let maxminute = (0..60).map(|m|
+            (m, guard.log.values().filter(|log| log[m as usize]).count())
+        )
+        .max_by_key(|(_, sum)| *sum)
+        .map(|(m, _)| m)
+        .unwrap();
+    maxminute * guard.id
 }
 
-fn part2(guards: &HashMap<i32, Guard>) {
-    let mut maxguard: i32 = 0;
-    let mut maxguardsum: i32 = 0;
-    let mut maxguardminute: i32 = 0;
-    for (id, guard) in guards.iter() {
-        let mut maxminute: i32 = 0;
-        let mut maxsum: i32 = -1;
-        for m in 0..60 {
-            let mut sum = 0;
-            for (_, log) in guard.log.iter() {
-                if log[m as usize] { sum += 1; }
-            }
-            if sum > maxsum {
-                maxsum = sum;
-                maxminute = m;
-            }
-        }
-        if maxsum > maxguardsum {
-            maxguardsum = maxsum;
-            maxguardminute = maxminute;
-            maxguard = *id;
-        }
+fn part2(guards: &HashMap<i32, Guard>) -> i32 {
+    let (guard, minute) = guards.values()
+        .map(|guard| (guard,
+            (0..60).map(|m|
+                (m, guard.log.values().filter(|log| log[m as usize]).count())
+            )
+            .max_by_key(|(_, sum)| *sum)
+            .unwrap()
+        ))
+        .max_by_key(|(_,(_,t))| *t)
+        .map(|(g, (m, _))| (g, m))
+        .unwrap();
+    guard.id * minute
+}
+
+fn main() {
+    let input: Vec<String> = read_input();
+    let guards = setup(&input);
+    println!("Part 1: {}", part1(&guards));
+    println!("Part 2: {}", part2(&guards));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day04_test() {
+        let input: Vec<String> = test_input(include_str!("day04.testinput"));
+        let guards = setup(&input);
+        assert_eq!(part1(&guards), 240);
+        assert_eq!(part2(&guards), 4455);
     }
-    println!("Part 2: {}", maxguardminute * maxguard);
 }

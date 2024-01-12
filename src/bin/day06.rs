@@ -1,42 +1,12 @@
-#[macro_use] extern crate lazy_static;
 use std::cmp::{max, min};
-use std::str::FromStr;
 use std::vec::Vec;
-use regex::Regex;
 use advent_lib::read::read_input;
+use advent_lib::coords::Coord2D;
 use advent_lib::grid::Grid;
-
-#[derive(Debug)]
-struct Coord {
-    x: i64,
-    y: i64,
-}
-
-impl FromStr for Coord {
-    type Err = String;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        lazy_static! {
-            static ref RE: Regex = Regex::new(r"^(\d+), *(\d+)").unwrap();
-        }
-        match RE.captures(s) {
-            None => return Err(format!("invalid input: {}", s)),
-            Some(caps) => {
-                let x:i64 = caps.get(1).unwrap().as_str().parse::<i64>().unwrap();
-                let y:i64 = caps.get(2).unwrap().as_str().parse::<i64>().unwrap();
-                return Ok(Coord {x: x, y: y});
-            },
-        }
-    }
-}
-
-fn main() {
-    let data = read_input::<Coord>();
-    bothparts(&data);
-}
 
 const MARGIN:i64 = 50;
 
-fn bothparts(data: &Vec<Coord>) {
+fn bothparts(data: &Vec<Coord2D>, test: bool) -> (i64, i64) {
     let min_x: i64 = data.iter().map(|c| c.x)
         .fold(100000, |acc, v| min(acc, v)) - MARGIN;
     let min_y: i64 = data.iter().map(|c| c.y)
@@ -103,14 +73,31 @@ fn bothparts(data: &Vec<Coord>) {
             maxarea = *c;
         }
     }
-    println!("Part 1: {}", maxarea);
 
     let mut region = 0;
     for d in td_grid.iter() {
-        if *d < 10000 {
+        if *d < if test {32} else {10000} {
             region += 1;
         }
     }
-    println!("Part 2: {}", region);
+    (maxarea, region)
 }
 
+fn main() {
+    let input = read_input::<Coord2D>();
+    let (part1, part2) = bothparts(&input, false);
+    println!("Part 1: {part1}");
+    println!("Part 2: {part2}");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day06_test() {
+        let input: Vec<Coord2D> = test_input(include_str!("day06.testinput"));
+        assert_eq!(bothparts(&input, true), (17, 16));
+    }
+}

@@ -1,8 +1,8 @@
-#[macro_use] extern crate lazy_static;
 use std::cmp::min;
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::str::FromStr;
 use std::vec::Vec;
+use lazy_static::lazy_static;
 use regex::Regex;
 use advent_lib::read::read_input;
 
@@ -31,7 +31,7 @@ impl FromStr for Step {
 }
 
 fn part1(deps: &HashMap<char, Vec<char>>,
-         revdeps: &HashMap<char, Vec<char>>) {
+         revdeps: &HashMap<char, Vec<char>>) -> String {
     let mut out = String::new();
     let mut done: HashSet<char> = HashSet::new();
     let mut queue: BTreeSet<char> = BTreeSet::new();
@@ -51,18 +51,17 @@ fn part1(deps: &HashMap<char, Vec<char>>,
             }
         }
     }
-    println!("Part 1: {}", out);
+    out
 }
-
-const NWORKERS:usize = 5;
 
 struct Worker {
     item: char,
     finish_at: u32,
+    duration: u32,
 }
 impl Worker {
-    fn new() -> Self {
-        Self { item: ' ', finish_at: 0 }
+    fn new(duration: u32) -> Self {
+        Self { item: ' ', finish_at: 0, duration }
     }
     fn is_idle(&self) -> bool {
         self.item == ' '
@@ -70,15 +69,15 @@ impl Worker {
     fn start(&mut self, item: char, now: u32) {
         assert!(self.is_idle());
         self.item = item;
-        self.finish_at = now + 61 + (item as u32 - 'A' as u32);
+        self.finish_at = now + self.duration + 1 + (item as u32 - 'A' as u32);
     }
     fn reset(&mut self) {
         self.item = ' ';
     }
 }
 
-fn part2(deps: &HashMap<char, Vec<char>>,
-         revdeps: &HashMap<char, Vec<char>>) {
+fn part2<const NWORKERS: usize>(deps: &HashMap<char, Vec<char>>,
+         revdeps: &HashMap<char, Vec<char>>) -> u32 {
     let mut out = String::new();
     let mut done: HashSet<char> = HashSet::new();
     let mut queue: BTreeSet<char> = BTreeSet::new();
@@ -90,7 +89,7 @@ fn part2(deps: &HashMap<char, Vec<char>>,
     let mut time = 0u32;
     let mut workers: Vec<Worker> = Vec::with_capacity(NWORKERS);
     for _ in 0..NWORKERS {
-        workers.push(Worker::new());
+        workers.push(Worker::new(if NWORKERS == 2 {0} else {60}));
     }
     while !queue.is_empty() || workers.iter().any(|w| !w.is_idle()) {
         let maybeworker = workers.iter_mut().find(|w| w.is_idle());
@@ -124,11 +123,10 @@ fn part2(deps: &HashMap<char, Vec<char>>,
             time = nexttime;
         }
     }
-    println!("Part 2: {}", time);
+    time
 }
 
-fn main() {
-    let data = read_input::<Step>();
+fn setup(data: &[Step]) -> (HashMap<char, Vec<char>>, HashMap<char, Vec<char>>) {
     let mut deps: HashMap<char, Vec<char>> = HashMap::new();
     let mut revdeps: HashMap<char, Vec<char>> = HashMap::new();
     for step in data {
@@ -140,6 +138,26 @@ fn main() {
         deps.entry(step.depends_on).or_insert(Vec::new());
         revdeps.entry(step.name).or_insert(Vec::new());
     }
-    part1(&deps, &revdeps);
-    part2(&deps, &revdeps);
+    (deps, revdeps)
+}
+
+fn main() {
+    let input = read_input::<Step>();
+    let (deps, revdeps) = setup(&input);
+    println!("Part 1: {}", part1(&deps, &revdeps));
+    println!("Part 2: {}", part2::<5>(&deps, &revdeps));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day07_test() {
+        let input: Vec<Step> = test_input(include_str!("day07.testinput"));
+        let (deps, revdeps) = setup(&input);
+        assert_eq!(part1(&deps, &revdeps), "CABDFE".to_string());
+        assert_eq!(part2::<2>(&deps, &revdeps), 15);
+    }
 }

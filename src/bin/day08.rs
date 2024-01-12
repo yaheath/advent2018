@@ -18,16 +18,9 @@ impl FromStr for Input {
     }
 }
 
-fn main() {
-    let data = read_input::<Input>();
-    part1(&(data[0].list));
-    part2(&(data[0].list));
-}
-
-fn part1(input: &Vec<usize>) {
+fn part1(input: &[usize]) -> usize {
     let mut iter = input.iter();
-    let result = part1_recurse(&mut iter);
-    println!("Part 1: {}", result);
+    part1_recurse(&mut iter)
 }
 
 fn part1_recurse(iter: &mut Iter<usize>) -> usize {
@@ -43,10 +36,9 @@ fn part1_recurse(iter: &mut Iter<usize>) -> usize {
     sum
 }
 
-fn part2(input: &Vec<usize>) {
+fn part2(input: &[usize]) -> usize {
     let mut iter = input.iter();
-    let result = part2_recurse(&mut iter);
-    println!("Part 2: {}", result);
+    part2_recurse(&mut iter)
 }
 
 fn part2_recurse(iter: &mut Iter<usize>) -> usize {
@@ -67,4 +59,23 @@ fn part2_recurse(iter: &mut Iter<usize>) -> usize {
         }
     }
     value
+}
+
+fn main() {
+    let input = read_input::<Input>();
+    println!("Part 1: {}", part1(&(input[0].list)));
+    println!("Part 2: {}", part2(&(input[0].list)));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day08_test() {
+        let input: Vec<Input> = test_input("2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2".into());
+        assert_eq!(part1(&input[0].list), 138);
+        assert_eq!(part2(&input[0].list), 66);
+    }
 }

@@ -19,7 +19,7 @@ impl<T: Copy + PartialEq> NumberLine<T> {
             default_val: default_val,
         }
     }
-    pub fn from_initial(initial: &Vec<T>, default_val: T) -> Self {
+    pub fn from_initial(initial: &[T], default_val: T) -> Self {
         let mut data: Vec<T> = vec![default_val; initial.len()];
         data.copy_from_slice(&initial[..]);
         Self {

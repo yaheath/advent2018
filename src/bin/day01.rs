@@ -2,11 +2,11 @@ use std::collections::HashSet;
 use std::vec::Vec;
 use advent_lib::read::read_input;
 
-fn part1(input: &Vec<i32>) -> i32 {
+fn part1(input: &[i32]) -> i32 {
     input.iter().sum()
 }
 
-fn part2(input: &Vec<i32>) -> i32 {
+fn part2(input: &[i32]) -> i32 {
     let mut freq: i32 = 0;
     let mut set: HashSet<i32> = HashSet::new();
     set.insert(freq);

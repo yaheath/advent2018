@@ -1,7 +1,6 @@
-#[macro_use] extern crate lazy_static;
-use std::cmp::{max, min};
 use std::str::FromStr;
 use std::vec::Vec;
+use lazy_static::lazy_static;
 use regex::Regex;
 use advent_lib::read::read_input;
 use advent_lib::grid::Grid;
@@ -37,12 +36,7 @@ impl FromStr for Point {
     }
 }
 
-fn main() {
-    let data = read_input::<Point>();
-    bothparts(&data);
-}
-
-fn bothparts(data: &Vec<Point>) {
+fn bothparts(data: &Vec<Point>) -> (String, i64) {
     let mut stars: Vec<Point> = Vec::with_capacity(data.len());
     for s in data.iter() {
         stars.push(*s);
@@ -61,10 +55,10 @@ fn bothparts(data: &Vec<Point>) {
         for s in stars.iter_mut() {
             s.x_loc += s.x_vel;
             s.y_loc += s.y_vel;
-            minx = min(minx, s.x_loc);
-            maxx = max(maxx, s.x_loc);
-            miny = min(miny, s.y_loc);
-            maxy = max(maxy, s.y_loc);
+            minx = minx.min(s.x_loc);
+            maxx = maxx.max(s.x_loc);
+            miny = miny.min(s.y_loc);
+            maxy = maxy.max(s.y_loc);
         }
 
         let newarea = (maxx - minx + 1) as i64 * (maxy - miny + 1) as i64;
@@ -84,13 +78,38 @@ fn bothparts(data: &Vec<Point>) {
     for s in stars.iter() {
         grid.set(s.x_loc, s.y_loc, 1);
     }
-    println!("Part 1:");
-    for y in miny .. maxy+1 {
-        for x in minx .. maxx+1 {
-            print!("{}", if grid.get(x, y) == 1 {"#"} else {"."});
-        }
-        println!("");
-    }
-    println!("Part 2: {}", elapsed);
+    (grid.format(|c| if c == 1 {'#'} else {'.'}), elapsed)
 }
 
+fn main() {
+    let data = read_input::<Point>();
+    let (part1, part2) = bothparts(&data);
+    println!("Part 1: {part1}");
+    println!("Part 2: {part2}");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day10_test() {
+        let input: Vec<Point> = test_input(include_str!("day10.testinput"));
+        let (part1, part2) = bothparts(&input);
+        assert_eq!(part1, String::from(
+".............
+..#...#..###.
+..#...#...#..
+..#...#...#..
+..#####...#..
+..#...#...#..
+..#...#...#..
+..#...#...#..
+..#...#..###.
+.............
+.............
+"));
+        assert_eq!(part2, 3);
+    }
+}

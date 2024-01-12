@@ -60,29 +60,11 @@ impl FromStr for InputItem {
     }
 }
 
-fn main() {
-    let data = read_input::<InputItem>();
-    let mut map: HashMap<u32, bool> = HashMap::with_capacity(data.len() - 2);
-    let mut initial: Option<&Vec<bool>> = None;
-    for i in 0..32 {
-        map.insert(i, false);
-    }
-    for d in data.iter() {
-        match d {
-            InputItem::InitialState(v) => {initial = Some(&v);},
-            InputItem::MapItem(k, v) => {map.insert(*k, *v);},
-            InputItem::None => (),
-        }
-    }
-    part1(&map, &initial.unwrap());
-    part2(&map, &initial.unwrap());
-}
-
 fn stringify(pots: &NumberLine<bool>) -> String {
     pots.enumerate().map(|v| if v.1 { '#' } else { '.' }).collect::<String>()
 }
 
-fn part1(map: &HashMap<u32, bool>, initial: &Vec<bool>) {
+fn part1(map: &HashMap<u32, bool>, initial: &Vec<bool>) -> i64 {
     let mut pots = NumberLine::<bool>::from_initial(initial, false);
     for _ in 0..20 {
         step(&mut pots, map);
@@ -91,10 +73,10 @@ fn part1(map: &HashMap<u32, bool>, initial: &Vec<bool>) {
     for idx in pots.start_index() .. pots.end_index() {
         if pots[idx] { sum += idx; }
     }
-    println!("Part 1: {}", sum);
+    sum
 }
 
-fn part2(map: &HashMap<u32, bool>, initial: &Vec<bool>) {
+fn part2(map: &HashMap<u32, bool>, initial: &[bool]) -> i64 {
     let mut pots = NumberLine::<bool>::from_initial(initial, false);
     let mut states: HashMap<String, (i64, usize)> = HashMap::new();
     let mut gen = 0usize;
@@ -121,9 +103,8 @@ fn part2(map: &HashMap<u32, bool>, initial: &Vec<bool>) {
                 for (idx, val) in pots.enumerate() {
                     if val { sum += idx + shift; }
                 }
-                println!("Part 2: {}", sum);
+                return sum;
             }
-            break;
         }
         states.insert(s, (startidx, gen));
         step(&mut pots, map);
@@ -140,5 +121,43 @@ fn step(pots: &mut NumberLine<bool>, map: &HashMap<u32, bool>) {
             if oldpots[p] { val |= 1; }
         }
         pots[idx] = map[&val];
+    }
+}
+
+fn setup(input: &[InputItem]) -> (HashMap<u32, bool>, Vec<bool>) {
+    let mut map: HashMap<u32, bool> = HashMap::with_capacity(input.len() - 2);
+    let mut initial: Option<Vec<bool>> = None;
+    for i in 0..32 {
+        map.insert(i, false);
+    }
+    for d in input.iter() {
+        match d {
+            InputItem::InitialState(v) => {initial = Some(v.clone());},
+            InputItem::MapItem(k, v) => {map.insert(*k, *v);},
+            InputItem::None => (),
+        }
+    }
+    let initial = initial.unwrap();
+    (map, initial)
+}
+
+fn main() {
+    let input = read_input::<InputItem>();
+    let (map, initial) = setup(&input);
+    println!("Part 1: {}", part1(&map, &initial));
+    println!("Part 2: {}", part2(&map, &initial));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day12_test() {
+        let input: Vec<InputItem> = test_input(include_str!("day12.testinput"));
+        let (map, initial) = setup(&input);
+        assert_eq!(part1(&map, &initial), 325);
+        assert_eq!(part2(&map, &initial), 999999999374);
     }
 }
