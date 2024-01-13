@@ -4,8 +4,8 @@ use std::collections::{BinaryHeap, HashMap};
 use std::str::FromStr;
 use itertools::Itertools;
 use regex::Regex;
-use advent_lib::coords::Coord2D;
-use advent_lib::read::read_input;
+use ya_advent_lib::coords::Coord2D;
+use ya_advent_lib::read::read_input;
 
 enum Input {
     Depth(i64),
@@ -256,7 +256,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day22_test() {

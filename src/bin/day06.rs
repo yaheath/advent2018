@@ -1,8 +1,8 @@
 use std::cmp::{max, min};
 use std::vec::Vec;
-use advent_lib::read::read_input;
-use advent_lib::coords::Coord2D;
-use advent_lib::grid::Grid;
+use ya_advent_lib::read::read_input;
+use ya_advent_lib::coords::Coord2D;
+use ya_advent_lib::grid::Grid;
 
 const MARGIN:i64 = 50;
 
@@ -93,7 +93,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day06_test() {

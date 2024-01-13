@@ -3,7 +3,7 @@ use std::vec::Vec;
 use lazy_static::lazy_static;
 use linked_list::{Cursor, LinkedList};
 use regex::Regex;
-use advent_lib::read::read_input;
+use ya_advent_lib::read::read_input;
 
 struct Input {
     n_players: usize,
@@ -88,7 +88,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day09_test() {

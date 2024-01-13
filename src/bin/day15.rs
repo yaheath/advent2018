@@ -2,8 +2,8 @@ use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 use std::usize;
 use std::vec::Vec;
-use advent_lib::read::read_input;
-use advent_lib::grid::Grid;
+use ya_advent_lib::read::read_input;
+use ya_advent_lib::grid::Grid;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum MapCell {
@@ -348,7 +348,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day15_test() {

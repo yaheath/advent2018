@@ -5,7 +5,7 @@ use std::vec::Vec;
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use regex::Regex;
-use advent_lib::read::read_grouped_input;
+use ya_advent_lib::read::read_grouped_input;
 
 #[derive(Debug)]
 enum Input {
@@ -275,7 +275,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::grouped_test_input;
+    use ya_advent_lib::read::grouped_test_input;
 
     #[test]
     fn day24_test() {

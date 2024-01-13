@@ -2,8 +2,8 @@ use std::str::FromStr;
 use std::vec::Vec;
 use lazy_static::lazy_static;
 use regex::Regex;
-use advent_lib::read::read_input;
-use advent_lib::grid::Grid;
+use ya_advent_lib::read::read_input;
+use ya_advent_lib::grid::Grid;
 
 #[derive(Clone, Copy)]
 struct Point {
@@ -74,11 +74,11 @@ fn bothparts(data: &Vec<Point>) -> (String, i64) {
         }
         elapsed += 1;
     }
-    let mut grid = Grid::new(minx, miny, maxx, maxy, -1);
+    let mut grid = Grid::new(minx, miny, maxx, maxy, 0);
     for s in stars.iter() {
         grid.set(s.x_loc, s.y_loc, 1);
     }
-    (grid.format(|c| if c == 1 {'#'} else {'.'}), elapsed)
+    (grid.format_str(|c| if c == 1 {"#".into()} else {".".into()}), elapsed)
 }
 
 fn main() {
@@ -91,7 +91,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day10_test() {

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use std::vec::Vec;
-use advent_lib::read::read_input;
+use ya_advent_lib::read::read_input;
 
 fn part1(input: &[i32]) -> i32 {
     input.iter().sum()
@@ -29,7 +29,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day01_test() {

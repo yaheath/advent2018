@@ -1,7 +1,7 @@
 use std::vec::Vec;
 use itertools::Itertools;
-use advent_lib::read::read_input;
-use advent_lib::grid::Grid;
+use ya_advent_lib::read::read_input;
+use ya_advent_lib::grid::Grid;
 
 fn power_level(x: i64, y: i64, serial_no: i64) -> i64 {
     let rack = x + 10;

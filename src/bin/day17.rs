@@ -5,8 +5,8 @@ use std::ops::{Range, RangeInclusive};
 use std::str::FromStr;
 use lazy_static::lazy_static;
 use regex::Regex;
-use advent_lib::read::read_input;
-use advent_lib::grid::Grid;
+use ya_advent_lib::read::read_input;
+use ya_advent_lib::grid::Grid;
 
 enum InputItem {
     Row(RangeInclusive<i64>, i64),
@@ -210,7 +210,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day17_test() {

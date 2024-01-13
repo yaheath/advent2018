@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use std::vec::Vec;
-use advent_lib::read::read_input;
+use ya_advent_lib::read::read_input;
 extern crate advent2018;
 use advent2018::vm::{VM, ProgramItem, RunResult};
 

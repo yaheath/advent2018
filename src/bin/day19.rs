@@ -1,4 +1,4 @@
-use advent_lib::read::read_input;
+use ya_advent_lib::read::read_input;
 extern crate advent2018;
 use advent2018::vm::{VM, ProgramItem, RunResult};
 
@@ -49,7 +49,7 @@ fn part2(prog: &[ProgramItem]) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day19_test() {

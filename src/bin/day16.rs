@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::vec::Vec;
 use lazy_static::lazy_static;
 use regex::Regex;
-use advent_lib::read::input_lines;
+use ya_advent_lib::read::input_lines;
 
 struct Instruction {
     opcode: usize,

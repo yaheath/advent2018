@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use advent_lib::read::read_input;
-use advent_lib::grid::Grid;
+use ya_advent_lib::read::read_input;
+use ya_advent_lib::grid::Grid;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum MapCell {
@@ -8,14 +8,19 @@ enum MapCell {
     Trees,
     Lumber,
 }
+impl From<char> for MapCell {
+    fn from(c: char) -> Self {
+        match c {
+            '#' => MapCell::Lumber,
+            '|' => MapCell::Trees,
+            _ => MapCell::Open,
+        }
+    }
+}
 
 fn main() {
     let data = read_input::<String>();
-    let grid = Grid::from_input(&data, MapCell::Open, 1, |c| match c {
-        '#' => MapCell::Lumber,
-        '|' => MapCell::Trees,
-        _ => MapCell::Open,
-    });
+    let grid = Grid::from_input(&data, MapCell::Open, 1);
 
     println!("Part 1: {}", part1(&grid));
     println!("Part 2: {}", part2(&grid));
@@ -100,16 +105,12 @@ fn step(grid: &Grid<MapCell>) -> Grid<MapCell> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day18_test() {
         let input: Vec<String> = test_input(include_str!("day18.testinput"));
-        let grid = Grid::from_input(&input, MapCell::Open, 1, |c| match c {
-            '#' => MapCell::Lumber,
-            '|' => MapCell::Trees,
-            _ => MapCell::Open,
-        });
+        let grid = Grid::from_input(&input, MapCell::Open, 1);
         assert_eq!(part1(&grid), 1147);
     }
 }

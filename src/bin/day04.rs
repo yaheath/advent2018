@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use regex::Regex;
-use advent_lib::read::read_input;
+use ya_advent_lib::read::read_input;
 
 struct Guard {
     id: i32,
@@ -130,7 +130,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day04_test() {

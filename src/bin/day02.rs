@@ -1,7 +1,7 @@
 use std::vec::Vec;
 use counter::Counter;
 use itertools::Itertools;
-use advent_lib::read::read_input;
+use ya_advent_lib::read::read_input;
 
 fn part1(input: &[String]) -> i32 {
     let (twos, threes) = input.iter()
@@ -45,7 +45,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use advent_lib::read::test_input;
+    use ya_advent_lib::read::test_input;
 
     #[test]
     fn day02_test() {
