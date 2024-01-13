@@ -49,7 +49,7 @@ impl C11n {
     }
 }
 
-fn part1(input: &Vec<Coord>) {
+fn part1(input: &Vec<Coord>) -> usize {
     let mut cstns: Vec<C11n> = Vec::new();
     for coord in input {
         let matches: Vec<usize> = cstns.iter()
@@ -73,11 +73,74 @@ fn part1(input: &Vec<Coord>) {
             }
         }
     }
-    println!("Part 1: {}", cstns.len());
+    cstns.len()
 }
 
 fn main() {
     let input = read_input::<Coord>();
-    part1(&input);
+    println!("Part 1: {}", part1(&input));
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day25_test() {
+        let input: Vec<Coord> = test_input(
+"0,0,0,0
+3,0,0,0
+0,3,0,0
+0,0,3,0
+0,0,0,3
+0,0,0,6
+9,0,0,0
+12,0,0,0
+");
+        assert_eq!(part1(&input), 2);
+
+        let input: Vec<Coord> = test_input(
+"-1,2,2,0
+0,0,2,-2
+0,0,0,-2
+-1,2,0,0
+-2,-2,-2,2
+3,0,2,-1
+-1,3,2,2
+-1,0,-1,0
+0,2,1,-2
+3,0,0,0
+");
+        assert_eq!(part1(&input), 4);
+
+        let input: Vec<Coord> = test_input(
+"1,-1,0,1
+2,0,-1,0
+3,2,-1,0
+0,0,3,1
+0,0,-1,-1
+2,3,-2,0
+-2,2,0,0
+2,-2,0,-1
+1,-1,0,-1
+3,2,0,2
+");
+        assert_eq!(part1(&input), 3);
+
+        let input: Vec<Coord> = test_input(
+"1,-1,-1,-2
+-2,-2,0,1
+0,2,1,3
+-2,3,-2,1
+0,2,3,-2
+-1,-1,1,-2
+0,-2,-1,0
+-2,2,3,-1
+1,2,2,0
+-1,-2,0,-2
+");
+        assert_eq!(part1(&input), 8);
+
+    }
+}

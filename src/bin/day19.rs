@@ -5,21 +5,22 @@ use advent2018::vm::{VM, ProgramItem, RunResult};
 fn main() {
     let prog: Vec<ProgramItem> = read_input();
 
-    part1(&prog);
-    part2(&prog);
+    println!("Part 1: {}", part1(&prog));
+    println!("Part 2: {}", part2(&prog));
 }
 
-fn part1(prog: &Vec<ProgramItem>) {
+fn part1(prog: &[ProgramItem]) -> usize {
     let mut vm = VM::new();
     vm.load(prog);
     match vm.run() {
         RunResult::Err(e) => panic!("Error while running program: {}", e),
-        RunResult::Halt => println!("Part 1: {}", vm.r[0]),
-        _ => ()
-    };
+        RunResult::Halt => {return vm.r[0];},
+        _ => (),
+    }
+    panic!();
 }
 
-fn part2(prog: &Vec<ProgramItem>) {
+fn part2(prog: &[ProgramItem]) -> usize {
     let mut vm = VM::new();
     vm.load(prog);
     vm.r[0] = 1;
@@ -42,6 +43,17 @@ fn part2(prog: &Vec<ProgramItem>) {
         last_ip = vm.r[vm.ip];
     }
     let bignum = vm.r[4];
-    let sum:usize = (1..=bignum).filter(|i| bignum % i == 0).sum();
-    println!("Part 2: {}", sum);
+    (1..=bignum).filter(|i| bignum % i == 0).sum()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day19_test() {
+        let input: Vec<ProgramItem> = test_input(include_str!("day19.testinput"));
+        assert_eq!(part1(&input), 7);
+    }
 }

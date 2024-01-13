@@ -17,12 +17,12 @@ fn main() {
         _ => MapCell::Open,
     });
 
-    part1(&grid);
-    part2(&grid);
+    println!("Part 1: {}", part1(&grid));
+    println!("Part 2: {}", part2(&grid));
 }
 
-fn part1(g: &Grid<MapCell>) {
-    let mut grid = g.clone();
+fn part1(grid: &Grid<MapCell>) -> usize {
+    let mut grid = grid.clone();
     for _ in 0..10 {
         grid = step(&grid);
     }
@@ -33,12 +33,11 @@ fn part1(g: &Grid<MapCell>) {
             _ => (w, l),
         }
     });
-
-    println!("Part 1: {}", w * l);
+    w * l
 }
 
-fn part2(g: &Grid<MapCell>) {
-    let mut grid = g.clone();
+fn part2(grid: &Grid<MapCell>) -> usize {
+    let mut grid = grid.clone();
     let mut table: HashMap<String, usize> = HashMap::new();
     let mut scores: Vec<usize> = Vec::new();
     for iter in 0.. {
@@ -52,8 +51,7 @@ fn part2(g: &Grid<MapCell>) {
             let cyclesize = iter - startidx;
             let ncycles = (1000000000 - startidx) / cyclesize;
             let remainder = 1000000000 - startidx - ncycles * cyclesize;
-            println!("Part 2: {}", scores[startidx + remainder]);
-            break;
+            return scores[startidx + remainder];
         }
         let (w, l) = grid.iter().fold((0usize, 0usize), |(w, l), c| {
             match c {
@@ -68,6 +66,7 @@ fn part2(g: &Grid<MapCell>) {
 
         grid = step(&grid);
     }
+    unreachable!();
 }
 
 fn step(grid: &Grid<MapCell>) -> Grid<MapCell> {
@@ -96,4 +95,21 @@ fn step(grid: &Grid<MapCell>) -> Grid<MapCell> {
         }
     }
     next
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day18_test() {
+        let input: Vec<String> = test_input(include_str!("day18.testinput"));
+        let grid = Grid::from_input(&input, MapCell::Open, 1, |c| match c {
+            '#' => MapCell::Lumber,
+            '|' => MapCell::Trees,
+            _ => MapCell::Open,
+        });
+        assert_eq!(part1(&grid), 1147);
+    }
 }

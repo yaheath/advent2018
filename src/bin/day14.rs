@@ -30,26 +30,16 @@ impl State {
     }
 }
 
-fn main() {
-    let input: Vec<String> = read_input::<String>();
-    let n_recipes = input[0].parse::<usize>().unwrap();
-    part1(n_recipes);
-    part2(&input[0]);
-}
-
-fn part1(n_recipes: usize) {
+fn part1(input: &str) -> String {
+    let n_recipes = input.parse::<usize>().unwrap();
     let mut state = State::new();
     while state.scores.len() < n_recipes + 10 {
         state.step();
     }
-    print!("Part 1: ");
-    for n in n_recipes .. n_recipes + 10 {
-        print!("{}", state.scores[n]);
-    }
-    println!("");
+    (n_recipes .. n_recipes + 10).map(|n| ((state.scores[n] as u8) + b'0') as char).collect()
 }
 
-fn part2(seq: &String) {
+fn part2(seq: &str) -> usize {
     let digits: Vec<usize> = seq.chars().map(|c| c as usize - '0' as usize).collect();
     let mut state = State::new();
     let mut curindex:usize = 0;
@@ -57,10 +47,32 @@ fn part2(seq: &String) {
         state.step();
         while curindex + digits.len() < state.scores.len() {
             if &state.scores[curindex .. curindex + digits.len()] == &digits[..] {
-                println!("Part 2: {}", curindex);
-                return;
+                return curindex;
             }
             curindex += 1;
         }
+    }
+}
+
+fn main() {
+    let input: Vec<String> = read_input::<String>();
+    println!("Part 1: {}", part1(&input[0]));
+    println!("Part 2: {}", part2(&input[0]));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn day14_test() {
+        assert_eq!(part1("9"), "5158916779".to_string());
+        assert_eq!(part1("5"), "0124515891".to_string());
+        assert_eq!(part1("18"), "9251071085".to_string());
+        assert_eq!(part1("2018"), "5941429882".to_string());
+        assert_eq!(part2("51589"), 9);
+        assert_eq!(part2("01245"), 5);
+        assert_eq!(part2("92510"), 18);
+        assert_eq!(part2("59414"), 2018);
     }
 }

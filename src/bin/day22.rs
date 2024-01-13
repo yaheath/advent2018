@@ -2,12 +2,14 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 use std::str::FromStr;
+use itertools::Itertools;
 use regex::Regex;
+use advent_lib::coords::Coord2D;
 use advent_lib::read::read_input;
 
 enum Input {
-    Depth(u64),
-    Target((u64, u64)),
+    Depth(i64),
+    Target(Coord2D),
 }
 
 impl FromStr for Input {
@@ -20,13 +22,13 @@ impl FromStr for Input {
             static ref T_RE: Regex = Regex::new(r"target: *(\d+),(\d+)").unwrap();
         }
         if let Some(caps) = D_RE.captures(s) {
-            let d = caps.get(1).unwrap().as_str().parse::<u64>().unwrap();
+            let d = caps.get(1).unwrap().as_str().parse::<i64>().unwrap();
             Ok(Input::Depth(d))
         }
         else if let Some(caps) = T_RE.captures(s) {
-            let x = caps.get(1).unwrap().as_str().parse::<u64>().unwrap();
-            let y = caps.get(2).unwrap().as_str().parse::<u64>().unwrap();
-            Ok(Input::Target((x, y)))
+            let x = caps.get(1).unwrap().as_str().parse::<i64>().unwrap();
+            let y = caps.get(2).unwrap().as_str().parse::<i64>().unwrap();
+            Ok(Input::Target(Coord2D::new(x, y)))
         }
         else {
             Err(format!("invalid input: {}", s))
@@ -43,8 +45,8 @@ enum CellType {
 
 #[derive(Clone, Copy)]
 struct CaveCell {
-    e_level: u64,
-    g_index: u64,
+    e_level: i64,
+    g_index: i64,
 }
 impl CaveCell {
     fn new() -> Self { CaveCell{e_level: 0, g_index: 0} }
@@ -59,36 +61,33 @@ impl CaveCell {
 }
 
 struct CaveGrid {
-    cache: HashMap<(u64, u64), CaveCell>,
-    depth: u64,
-    target_x: u64,
-    target_y: u64,
+    cache: HashMap<Coord2D, CaveCell>,
+    depth: i64,
+    target: Coord2D,
 }
 impl CaveGrid {
-    fn new(target: (u64, u64), depth: u64) -> Self {
+    fn new(target: Coord2D, depth: i64) -> Self {
         Self{
             cache: HashMap::new(),
-            target_x: target.0,
-            target_y: target.1,
-            depth: depth,
+            target,
+            depth,
         }
     }
-    fn get(&mut self, point: (u64, u64)) -> CaveCell {
+    fn get(&mut self, point: Coord2D) -> CaveCell {
         if self.cache.contains_key(&point) { return self.cache[&point]; }
         let mut cc = CaveCell::new();
-        let (x, y) = point;
-        if x == 0 {
-            cc.g_index = 48271 * y;
+        if point.x == 0 {
+            cc.g_index = 48271 * point.y;
         }
-        else if y == 0 {
-            cc.g_index = 16807 * x;
+        else if point.y == 0 {
+            cc.g_index = 16807 * point.x;
         }
-        else if x == self.target_x && y == self.target_y {
+        else if point == self.target {
             cc.g_index = 0;
         }
         else {
-            let c1 = self.get((x - 1, y));
-            let c2 = self.get((x, y - 1));
+            let c1 = self.get(point + Coord2D::new(-1, 0));
+            let c2 = self.get(point + Coord2D::new(0, -1));
             cc.g_index = c1.e_level * c2.e_level;
         }
         cc.e_level = (cc.g_index + self.depth) % 20183;
@@ -97,44 +96,44 @@ impl CaveGrid {
     }
 }
 
-fn main() {
-    let data = read_input::<Input>();
+fn setup(input: &[Input]) -> (Coord2D, CaveGrid) {
     let depth;
-    let target_x;
-    let target_y;
-    if let Input::Depth(d) = data[0] {
+    let target;
+    if let Input::Depth(d) = input[0] {
         depth = d;
     } else {
         panic!("invalid input");
     }
-    if let Input::Target((x, y)) = data[1] {
-        target_x = x;
-        target_y = y;
+    if let Input::Target(t) = input[1] {
+        target = t;
     } else {
         panic!("invalid input");
     }
-    let mut grid: CaveGrid = CaveGrid::new((target_x, target_y), depth);
-    let mut total_risk = 0;
-    for y in 0 ..= target_y {
-        for x in 0 ..= target_x {
-            let cc = grid.get((x, y));
-            total_risk += cc.e_level % 3;
-        }
-    }
-    println!("Part 1: {}", total_risk);
+    let grid: CaveGrid = CaveGrid::new(target, depth);
+    (target, grid)
+}
 
-    let mut dists: HashMap<(u64, u64, Tool), u64> = HashMap::new();
+fn part1(input: &[Input]) -> i64 {
+    let (target, mut grid) = setup(&input);
+    (0 ..= target.x)
+        .cartesian_product(0 ..= target.y)
+        .map(|(x, y)| grid.get(Coord2D::new(x, y)).e_level % 3)
+        .sum()
+}
+
+fn part2(input: &[Input]) -> i64 {
+    let (target, mut grid) = setup(&input);
+    let mut dists: HashMap<(Coord2D, Tool), i64> = HashMap::new();
     let mut heap = BinaryHeap::new();
-    dists.insert((0, 0, Tool::Torch), 0);
-    heap.push(State::initial((target_x, target_y)));
+    dists.insert((Coord2D::new(0, 0), Tool::Torch), 0);
+    heap.push(State::initial(target));
 
     while let Some(state) = heap.pop() {
         if dists.contains_key(&state.key()) && state.cost > dists[&state.key()] {
             continue;
         }
-        if state.point.0 == target_x && state.point.1 == target_y && state.tool == Tool::Torch {
-            println!("Part 2: {}", state.cost);
-            break;
+        if state.point == target && state.tool == Tool::Torch {
+            return state.cost;
         }
         let cell = grid.get(state.point);
 
@@ -158,25 +157,26 @@ fn main() {
         }
 
         {
-            let mut check_move = |point: (u64, u64)| {
+            let mut check_move = |point: Coord2D| {
                 let nextcell = grid.get(point);
                 match state.tool {
                     Tool::Neither => if nextcell.cell_type() == CellType::Rocky { return; },
                     Tool::Climbing => if nextcell.cell_type() == CellType::Narrow { return; },
                     Tool::Torch => if nextcell.cell_type() == CellType::Wet { return; },
                 }
-                let next = state.move_to(point, (target_x, target_y));
+                let next = state.move_to(point, target);
                 if !dists.contains_key(&next.key()) || next.cost < dists[&next.key()] {
                     dists.insert(next.key(), next.cost);
                     heap.push(next);
                 }
             };
-            if state.point.1 > 0 { check_move((state.point.0, state.point.1 - 1)); }
-            check_move((state.point.0 + 1, state.point.1));
-            if state.point.0 > 0 { check_move((state.point.0 - 1, state.point.1)); }
-            check_move((state.point.0, state.point.1 + 1));
+            if state.point.y > 0 { check_move(Coord2D::new(state.point.x, state.point.y - 1)); }
+            check_move(Coord2D::new(state.point.x + 1, state.point.y));
+            if state.point.x > 0 { check_move(Coord2D::new(state.point.x - 1, state.point.y)); }
+            check_move(Coord2D::new(state.point.x, state.point.y + 1));
         }
     }
+    panic!("path not found");
 }
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
@@ -188,26 +188,25 @@ enum Tool {
 
 #[derive(Clone, Eq, PartialEq)]
 struct State {
-    cost: u64,
-    h_cost: u64,
-    point: (u64, u64),
+    cost: i64,
+    h_cost: i64,
+    point: Coord2D,
     tool: Tool,
 }
 impl State {
-    fn initial(target: (u64, u64)) -> Self {
+    fn initial(target: Coord2D) -> Self {
         State {
             cost: 0,
-            h_cost: target.0 + target.1,
-            point: (0, 0),
+            h_cost: target.x + target.y,
+            point: Coord2D::new(0, 0),
             tool: Tool::Torch,
         }
     }
-    fn move_to(&self, point: (u64, u64), target: (u64, u64)) -> Self {
-        let cx = if point.0 > target.0 { point.0 - target.0 } else { target.0 - point.0 };
-        let cy = if point.1 > target.1 { point.1 - target.1 } else { target.1 - point.1 };
+    fn move_to(&self, point: Coord2D, target: Coord2D) -> Self {
+        let d = point.mdist_to(&target);
         State {
             cost: self.cost + 1,
-            h_cost: self.cost + 1 + cx + cy,
+            h_cost: self.cost + 1 + d,
             point: point,
             tool: self.tool,
         }
@@ -220,8 +219,8 @@ impl State {
             tool: tool,
         }
     }
-    fn key(&self) -> (u64, u64, Tool) {
-        (self.point.0, self.point.1, self.tool)
+    fn key(&self) -> (Coord2D, Tool) {
+        (self.point, self.tool)
     }
 }
 
@@ -235,8 +234,8 @@ impl Ord for State {
         // to make implementations of `PartialEq` and `Ord` consistent.
         other.h_cost.cmp(&self.h_cost)
             .then_with(|| other.cost.cmp(&self.cost))
-            .then_with(|| other.point.1.cmp(&self.point.1))
-            .then_with(|| other.point.0.cmp(&self.point.0))
+            .then_with(|| other.point.y.cmp(&self.point.y))
+            .then_with(|| other.point.x.cmp(&self.point.x))
             .then_with(|| (other.tool as u8).cmp(&(self.tool as u8)))
     }
 }
@@ -245,5 +244,24 @@ impl Ord for State {
 impl PartialOrd for State {
     fn partial_cmp(&self, other: &State) -> Option<Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+fn main() {
+    let input = read_input::<Input>();
+    println!("Part 1: {}", part1(&input));
+    println!("Part 2: {}", part2(&input));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day22_test() {
+        let input: Vec<Input> = test_input("depth: 510\ntarget: 10,10\n");
+        assert_eq!(part1(&input), 114);
+        assert_eq!(part2(&input), 45);
     }
 }

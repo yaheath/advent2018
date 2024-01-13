@@ -101,7 +101,7 @@ impl VM {
             is_at_breakpoint: false,
         }
     }
-    pub fn load(&mut self, program: &Vec<ProgramItem>) {
+    pub fn load(&mut self, program: &[ProgramItem]) {
         self.prog.clear();
         for pi in program {
             match pi {

@@ -1,6 +1,6 @@
-#[macro_use] extern crate lazy_static;
 use std::collections::{HashMap, HashSet};
 use std::vec::Vec;
+use lazy_static::lazy_static;
 use regex::Regex;
 use advent_lib::read::input_lines;
 
@@ -125,29 +125,25 @@ fn main() {
         let inst = Instruction::from_str(&line).unwrap();
         let line = lineiter.next().unwrap();
         let after = registers_from_str(&line).unwrap();
-        samples.push(Sample { before: before, inst: inst, after: after });
+        samples.push(Sample { before, inst, after });
         lineiter.next();
     }
     let program:Vec<Instruction> = lineiter
-        .map(|l| Instruction::from_str(&l))
-        .filter(|i| i.is_some())
-        .map(|i| i.unwrap())
+        .filter_map(|l| Instruction::from_str(&l))
         .collect();
 
     let mut oper_table: Vec<HashSet<&'static str>> = Vec::with_capacity(16);
     for _ in 0..16 { oper_table.push(HashSet::new()); }
 
-    let count = samples.iter().fold(0, |count, sample| {
-        let syms = test_sample(sample, &operations);
-        for s in syms.iter() {
-            oper_table[sample.inst.opcode].insert(s);
-        }
-        if syms.len() >= 3 {
-            count + 1
-        } else {
-            count
-        }
-    });
+    let count = samples.iter()
+        .filter(|sample| {
+            let syms = test_sample(sample, &operations);
+            for s in syms.iter() {
+                oper_table[sample.inst.opcode].insert(s);
+            }
+            syms.len() >= 3
+        })
+        .count();
     println!("Part 1: {}", count);
 
     /*
@@ -161,7 +157,7 @@ fn main() {
         let mut item: Option<&'static str> = None;
         {
             if let Some((i, h)) = oper_table.iter().enumerate().find(|(_, h)| h.len() == 1) {
-                item = Some(*(h.iter().nth(0).unwrap()));
+                item = Some(*(h.iter().next().unwrap()));
                 final_oper_table[i] = item.unwrap();
             }
         }

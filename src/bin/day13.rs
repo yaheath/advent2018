@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::vec::Vec;
 use advent_lib::read::read_input;
 use advent_lib::grid::Grid;
@@ -19,10 +18,7 @@ enum TrackCell {
 }
 impl TrackCell {
     fn is_empty(&self) -> bool {
-        match *self {
-            TrackCell::Empty => true,
-            _ => false,
-        }
+        matches!(*self, TrackCell::Empty)
     }
 }
 
@@ -57,16 +53,81 @@ impl Cart {
     }
 }
 
-fn main() {
-    let data = read_input::<String>();
-    let width = data.iter().map(|s| s.len()).fold(0, |maxw, w| max(w, maxw)) as i64;
+fn search_coll(carts: &mut Vec<Cart>, with: &Cart) -> bool {
+    let mut crashed = false;
+    for idx in (0 .. carts.len()).rev() {
+        if carts[idx].x == with.x && carts[idx].y == with.y {
+            carts.remove(idx);
+            crashed = true;
+        }
+    }
+    return crashed;
+}
+
+fn step(
+    grid: &mut Grid<TrackCell>,
+    mut carts: &mut Vec<Cart>,
+    crash_happened: &mut Option<(i64, i64)>,
+) -> bool {
+    carts.sort_unstable_by(|a, b|
+        if a.y == b.y {
+            b.x.cmp(&a.x)
+        } else {
+            b.y.cmp(&a.y)
+        }
+    );
+    let mut done: Vec<Cart> = Vec::with_capacity(carts.len());
+    while !carts.is_empty() {
+        let mut c = carts.pop().unwrap();
+        match c.dir {
+            Dir::N => c.y -= 1,
+            Dir::S => c.y += 1,
+            Dir::E => c.x += 1,
+            Dir::W => c.x -= 1,
+        }
+        let loc = grid.get(c.x, c.y);
+        match loc {
+            TrackCell::Track(a, b) => {
+                if c.dir != a && c.dir != b {
+                    let diff = (c.dir as i64 - a as i64).abs();
+                    if diff == 1 || diff == 3 {
+                        c.dir = a;
+                    } else {
+                        c.dir = b;
+                    }
+                }
+            },
+            TrackCell::Cross => {
+                c.turn();
+            },
+            TrackCell::Empty => {
+                panic!("empty cell {},{}", c.x, c.y);
+            },
+        }
+        let crashed1 = search_coll(&mut carts, &c);
+        let crashed2 = search_coll(&mut done, &c);
+        if crashed1 || crashed2 {
+            if crash_happened.is_none() {
+                crash_happened.replace((c.x, c.y));
+            }
+        }
+        else {
+            done.push(c);
+        }
+    }
+    carts.append(&mut done);
+    carts.len() > 1
+}
+
+fn bothparts(data: &[String]) -> ((i64, i64), (i64, i64)) {
+    let width = data.iter().map(|s| s.len()).max().unwrap() as i64;
     let height = data.len() as i64;
     let mut grid = Grid::new(0, 0, width-1, height-1, TrackCell::Empty);
     let mut carts: Vec<Cart> = Vec::new();
 
-    let mut y = 0i64;
-    for line in data.iter() {
+    for (uy, line) in data.iter().enumerate() {
         let mut lastc = TrackCell::Empty;
+        let y = uy as i64;
         for (ux, c) in line.chars().enumerate() {
             let x = ux as i64;
             let cell = match c {
@@ -122,7 +183,6 @@ fn main() {
             }
             lastc = cell;
         }
-        y += 1;
     }
 
     /*
@@ -145,76 +205,32 @@ fn main() {
     });
     */
 
-    let mut crash_happened = false;
-    while step(&mut grid, &mut carts, &mut crash_happened) {
-    }
-    println!("Part 2: {},{}", carts[0].x, carts[0].y);
+    let mut part1: Option<(i64,i64)> = None;
+    while step(&mut grid, &mut carts, &mut part1) { }
+    let part2 = if carts.is_empty() { (0,0) } else { (carts[0].x, carts[0].y) };
+
+    (part1.unwrap(), part2)
 }
 
-fn step(
-    grid: &mut Grid<TrackCell>,
-    mut carts: &mut Vec<Cart>,
-    crash_happened: &mut bool,
-) -> bool {
-    carts.sort_unstable_by(|a, b|
-        if a.y == b.y {
-            b.x.cmp(&a.x)
-        } else {
-            b.y.cmp(&a.y)
-        }
-    );
-    let mut done: Vec<Cart> = Vec::with_capacity(carts.len());
-    while !carts.is_empty() {
-        let mut c = carts.pop().unwrap();
-        match c.dir {
-            Dir::N => c.y -= 1,
-            Dir::S => c.y += 1,
-            Dir::E => c.x += 1,
-            Dir::W => c.x -= 1,
-        }
-        let loc = grid.get(c.x, c.y);
-        match loc {
-            TrackCell::Track(a, b) => {
-                if c.dir != a && c.dir != b {
-                    let diff = (c.dir as i64 - a as i64).abs();
-                    if diff == 1 || diff == 3 {
-                        c.dir = a;
-                    } else {
-                        c.dir = b;
-                    }
-                }
-            },
-            TrackCell::Cross => {
-                c.turn();
-            },
-            TrackCell::Empty => {
-                panic!("empty cell {},{}", c.x, c.y);
-            },
-        }
-        let crashed1 = search_coll(&mut carts, &c);
-        let crashed2 = search_coll(&mut done, &c);
-        if crashed1 || crashed2 {
-            if !*crash_happened {
-                println!("Part 1: {},{}", c.x, c.y);
-                *crash_happened = true;
-            }
-        }
-        else {
-            done.push(c);
-        }
-    }
-    carts.append(&mut done);
-    carts.len() > 1
+fn main() {
+    let input = read_input::<String>();
+    let (part1, part2) = bothparts(&input);
+    println!("Part 1: {},{}", part1.0, part1.1);
+    println!("Part 2: {},{}", part2.0, part2.1);
 }
 
-fn search_coll(carts: &mut Vec<Cart>, with: &Cart) -> bool {
-    let mut crashed = false;
-    for idx in (0 .. carts.len()).rev() {
-        if carts[idx].x == with.x && carts[idx].y == with.y {
-            carts.remove(idx);
-            crashed = true;
-        }
-    }
-    return crashed;
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
 
+    #[test]
+    fn day13_test() {
+        let input: Vec<String> = test_input(include_str!("day13.testinput"));
+        let (part1, _) = bothparts(&input);
+        assert_eq!(part1, (7, 3));
+        let input: Vec<String> = test_input(include_str!("day13.testinput2"));
+        let (_, part2) = bothparts(&input);
+        assert_eq!(part2, (6,4));
+    }
+}

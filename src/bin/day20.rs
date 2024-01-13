@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::cmp::{max, Ordering};
+use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::vec::Vec;
 use advent_lib::read::read_input;
@@ -146,13 +146,15 @@ impl PartialOrd for State {
 
 fn main() {
     let input: String = read_input::<String>().pop().unwrap();
+    let (part1, part2) = bothparts(&input);
+    println!("Part 1: {part1}");
+    println!("Part 2: {part2}");
+}
+
+fn bothparts(input: &str) -> (usize, usize) {
     let tree = parse(&input);
     let map = ElfMap::new();
     traverse(&map, &tree, (0, 0));
-    bothparts(&map);
-}
-
-fn bothparts(map: &ElfMap) {
     //println!("map has {} rooms", map.data.borrow().len());
     let mapdata = map.data.borrow();
     let mut dists: HashMap<(i32, i32), usize> = HashMap::new();
@@ -177,10 +179,9 @@ fn bothparts(map: &ElfMap) {
         if room.door_w { check((state.point.0 - 1, state.point.1)); }
         if room.door_s { check((state.point.0, state.point.1 + 1)); }
     }
-    let maxcost = dists.iter().fold(0, |maxc, t| max(maxc, *t.1));
-    println!("Part 1: {}", maxcost);
-    let count = dists.iter().fold(0, |count, t| if *t.1 >= 1000 { count + 1 } else { count });
-    println!("Part 2: {}", count);
+    let maxcost = dists.values().max_by_key(|t| *t).unwrap();
+    let count = dists.values().filter(|t| **t >= 1000).count();
+    (*maxcost, count)
 }
 
 fn traverse(map: &ElfMap, node: &Node, start: (i32, i32)) -> HashSet<(i32, i32)> {
@@ -283,14 +284,14 @@ fn parse<'a>(input: &'a str) -> Node {
 
 #[cfg(test)]
 mod test {
-    use super::{Node, parse};
+    use super::*;
 
     #[test]
     fn node_parse() {
         if let Node::Segment(foo) = parse("^NEWSNEWS$") {
             assert_eq!(foo, "NEWSNEWS");
         } else {
-            panic!();
+            assert!(false);
         }
 
         if let Node::Branch(foo) = parse("NEWS|SWEN|EEE") {
@@ -299,7 +300,7 @@ mod test {
             assert_eq!(foo[1], Node::Segment("SWEN"));
             assert_eq!(foo[2], Node::Segment("EEE"));
         } else {
-            panic!();
+            assert!(false);
         }
 
         let foo = parse("^ENWWW(NEEE|SSE(EE|N))$");
@@ -343,7 +344,22 @@ mod test {
                 Node::Segment("NNN"),
             ])
         );
+    }
 
+    #[test]
+    fn day20_test() {
+        let (part1, _part2) = bothparts("^WNE$");
+        assert_eq!(part1, 3);
+        let (part1, _part2) = bothparts("^ENWWW(NEEE|SSE(EE|N))$");
+        assert_eq!(part1, 10);
+        let (part1, _part2) = bothparts("^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$");
+        assert_eq!(part1, 18);
+        let (part1, _part2) = bothparts("^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$");
+        assert_eq!(part1, 18);
+        let (part1, _part2) = bothparts("^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$");
+        assert_eq!(part1, 23);
+        let (part1, _part2) = bothparts("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$");
+        assert_eq!(part1, 31);
     }
 }
 

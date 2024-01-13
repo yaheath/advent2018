@@ -1,9 +1,9 @@
-#[macro_use] extern crate lazy_static;
 use std::cmp::{Ordering, Reverse};
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::str::FromStr;
 use std::vec::Vec;
 use itertools::Itertools;
+use lazy_static::lazy_static;
 use regex::Regex;
 use advent_lib::read::read_grouped_input;
 
@@ -249,25 +249,38 @@ fn combat(input: &Vec<Vec<Input>>, immune_boost: i64) -> (i64, Army) {
     }
 }
 
-fn part1(input: &Vec<Vec<Input>>) {
+fn part1(input: &Vec<Vec<Input>>) -> i64 {
     let (answer, _) = combat(input, 0);
-    println!("Part 1: {answer}");
+    answer
 }
 
-fn part2(input: &Vec<Vec<Input>>) {
+fn part2(input: &Vec<Vec<Input>>) -> i64 {
     // binary search would work a lot better here
     for b in 1.. {
         let (units, victor) = combat(input, b);
         if victor == Army::Immune {
-            println!("Part 2: {units}");
-            return;
+            return units;
         }
     }
+    unreachable!();
 }
 
 fn main() {
     let input = read_grouped_input::<Input>();
-    part1(&input);
-    part2(&input);
+    println!("Part 1: {}", part1(&input));
+    println!("Part 2: {}", part2(&input));
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::grouped_test_input;
+
+    #[test]
+    fn day24_test() {
+        let input: Vec<Vec<Input>> = grouped_test_input(include_str!("day24.testinput"));
+        assert_eq!(part1(&input), 5216);
+        assert_eq!(part2(&input), 51);
+    }
+}

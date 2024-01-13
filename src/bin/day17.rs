@@ -1,9 +1,9 @@
-#[macro_use] extern crate lazy_static;
 use std::cell::RefCell;
 use std::cmp::{max, min};
 use std::io::BufWriter;
 use std::ops::{Range, RangeInclusive};
 use std::str::FromStr;
+use lazy_static::lazy_static;
 use regex::Regex;
 use advent_lib::read::read_input;
 use advent_lib::grid::Grid;
@@ -72,15 +72,14 @@ impl<T: Copy> WrappedGrid<T> {
     }
 }
 
-fn main() {
-    let input = read_input::<InputItem>();
-    let (minx, maxx) = input.iter().fold((std::i64::MAX, 0),
+fn bothparts(input: &[InputItem]) -> (i64, i64) {
+    let (minx, maxx) = input.iter().fold((i64::MAX, 0),
         |(minx, maxx), item| match item {
             InputItem::Row(x, _) => (min(minx, *x.start()), max(maxx, *x.end())),
             InputItem::Col(x, _) => (min(minx, *x), max(maxx, *x)),
         }
     );
-    let (miny, maxy) = input.iter().fold((std::i64::MAX, 0),
+    let (miny, maxy) = input.iter().fold((i64::MAX, 0),
         |(miny, maxy), item| match item {
             InputItem::Row(_, y) => (min(miny, *y), max(maxy, *y)),
             InputItem::Col(_, y) => (min(miny, *y.start()), max(maxy, *y.end())),
@@ -112,8 +111,7 @@ fn main() {
         WCell::WetSand => (n_w, n_s + 1),
         _ => (n_w, n_s),
     });
-    println!("Part 1: {}", n_w + n_s);
-    println!("Part 2: {}", n_w);
+    (n_w + n_s, n_w)
 }
 
 fn go_vertical(start_x:i64, start_y:i64, grid: &WrappedGrid<WCell>) -> bool {
@@ -200,4 +198,23 @@ fn dump_grid(grid: &Grid<WCell>) {
         WCell::Clay => '#',
         WCell::WetSand => '|',
     });
+}
+
+fn main() {
+    let input = read_input::<InputItem>();
+    let (part1, part2) = bothparts(&input);
+    println!("Part 1: {part1}");
+    println!("Part 2: {part2}");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day17_test() {
+        let input: Vec<InputItem> = test_input(include_str!("day17.testinput"));
+        assert_eq!(bothparts(&input), (57, 29));
+    }
 }

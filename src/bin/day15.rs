@@ -1,4 +1,4 @@
-use std::cmp::{max, Ordering};
+use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 use std::usize;
 use std::vec::Vec;
@@ -120,16 +120,16 @@ struct Battle {
     elf_attack: i64,
 }
 impl Battle {
-    fn new(input: &Vec<String>, elf_attack: i64) -> Self {
-        let width = input.iter().map(|s| s.len()).fold(0, |maxw, w| max(w, maxw)) as i64;
+    fn new(input: &[String], elf_attack: i64) -> Self {
+        let width = input.iter().map(|s| s.len()).max().unwrap() as i64;
         let height = input.len() as i64;
-        let mut y = 0i64;
         let mut inst = Self {
             grid: Grid::new(0, 0, width-1, height-1, MapCell::Empty),
             units: Vec::new(),
             elf_attack: elf_attack,
         };
-        for line in input.iter() {
+        for (uy, line) in input.iter().enumerate() {
+            let y = uy as i64;
             for (ux, c) in line.chars().enumerate() {
                 let x = ux as i64;
                 match c {
@@ -139,7 +139,6 @@ impl Battle {
                     _ => (),
                 };
             }
-            y += 1;
         }
         inst
     }
@@ -288,7 +287,7 @@ impl Battle {
 
     fn attack(&mut self, unit_id: usize, enemy_id: usize) {
         assert_ne!(unit_id, enemy_id);
-        let split_at = max(unit_id, enemy_id);
+        let split_at = unit_id.max(enemy_id);
         let (left, right) = self.units.split_at_mut(split_at);
         let unit: &mut Unit;
         let enemy: &mut Unit;
@@ -306,31 +305,24 @@ impl Battle {
     }
 }
 
-fn main() {
-    let data = read_input::<String>();
-    part1(&data);
-    part2(&data);
-}
-
-fn part1(data: &Vec<String>) {
-    let mut battle = Battle::new(&data, 3);
-    let mut turns = 0i64;
+fn part1(data: &[String]) -> i64 {
+    let mut battle = Battle::new(data, 3);
+    let mut turns = 0;
 
     while battle.step() {
         turns += 1;
     }
-    let sum = battle.units.iter().filter(|u| u.is_alive()).fold(0, |sum, u| sum + u.hp);
-    println!("Part 1: {}", sum * turns);
+    turns * battle.units.iter().filter(|u| u.is_alive()).map(|u| u.hp).sum::<i64>()
 }
 
-fn part2(data: &Vec<String>) {
-    let mut lower = 3i64;
-    let mut upper = 200i64;
-    let mut lastwin = 0i64;
+fn part2(data: &[String]) -> i64 {
+    let mut lower = 3;
+    let mut upper = 200;
+    let mut lastwin = 0;
     while lower + 1 < upper {
         let mid = lower + (upper - lower) / 2;
         //println!("testing {}", mid);
-        let mut battle = Battle::new(&data, mid);
+        let mut battle = Battle::new(data, mid);
         let mut turns = 0;
         while battle.step() {
             turns += 1;
@@ -344,5 +336,94 @@ fn part2(data: &Vec<String>) {
             lastwin = turns * sum;
         }
     }
-    println!("Part 2: {}", lastwin);
+    lastwin
+}
+
+fn main() {
+    let data = read_input::<String>();
+    println!("Part 1: {}", part1(&data));
+    println!("Part 2: {}", part2(&data));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day15_test() {
+        let input = test_input::<String>(
+"#######
+#.G...#
+#...EG#
+#.#.#G#
+#..G#E#
+#.....#
+#######
+");
+        assert_eq!(part1(&input), 27730);
+        assert_eq!(part2(&input), 4988);
+
+        let input = test_input::<String>(
+"#######
+#G..#E#
+#E#E.E#
+#G.##.#
+#...#E#
+#...E.#
+#######
+");
+        assert_eq!(part1(&input), 36334);
+        assert_eq!(part2(&input), 29064);
+
+        let input = test_input::<String>(
+"#######
+#E..EG#
+#.#G.E#
+#E.##E#
+#G..#.#
+#..E#.#
+#######
+");
+        assert_eq!(part1(&input), 39514);
+        assert_eq!(part2(&input), 31284);
+
+        let input = test_input::<String>(
+"#######
+#E.G#.#
+#.#G..#
+#G.#.G#
+#G..#.#
+#...E.#
+#######
+");
+        assert_eq!(part1(&input), 27755);
+        assert_eq!(part2(&input), 3478);
+
+        let input = test_input::<String>(
+"#######
+#.E...#
+#.#..G#
+#.###.#
+#E#G#G#
+#...#G#
+#######
+");
+        assert_eq!(part1(&input), 28944);
+        assert_eq!(part2(&input), 6474);
+
+        let input = test_input::<String>(
+"#########
+#G......#
+#.E.#...#
+#..##..G#
+#...##..#
+#...#...#
+#.G...G.#
+#.....G.#
+#########
+");
+        assert_eq!(part1(&input), 18740);
+        assert_eq!(part2(&input), 1140);
+    }
 }

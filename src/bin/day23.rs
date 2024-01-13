@@ -1,9 +1,9 @@
-#[macro_use] extern crate lazy_static;
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::ops::Range;
 use std::str::FromStr;
 use std::vec::Vec;
+use lazy_static::lazy_static;
 use regex::Regex;
 use advent_lib::read::read_input;
 
@@ -186,22 +186,14 @@ impl PartialOrd for State {
     }
 }
 
-fn main() {
-    let mut data = read_input::<Nanobot>();
-    data.sort_unstable_by(|a, b| b.r.cmp(&a.r));
-    part1(&data);
-    part2(&data);
-}
-
-fn part1(data: &Vec<Nanobot>) {
+fn part1(data: &Vec<Nanobot>) -> usize {
     let bot = data[0];
-    let count = data.iter()
+    data.iter()
         .filter(|b| bot.in_range(b))
-        .count();
-    println!("Part 1: {}", count);
+        .count()
 }
 
-fn part2(data: &Vec<Nanobot>) {
+fn part2(data: &Vec<Nanobot>) -> i64 {
     let mut xstart = data[0].x;
     let mut xend = data[0].x + 1;
     let mut ystart = data[0].y;
@@ -225,12 +217,32 @@ fn part2(data: &Vec<Nanobot>) {
     while let Some(state) = heap.pop() {
         if state.bbox.volume() == 1 {
             let dist = state.bbox.x.start.abs() + state.bbox.y.start.abs() + state.bbox.z.start.abs();
-            println!("Part 2: {dist}");
-            return;
+            return dist;
         }
         for b in state.bbox.split() {
             heap.push(State::new(b, data));
         }
     }
     panic!("no solution found");
+}
+
+fn main() {
+    let mut data = read_input::<Nanobot>();
+    data.sort_unstable_by(|a, b| b.r.cmp(&a.r));
+    println!("Part 1: {}", part1(&data));
+    println!("Part 2: {}", part2(&data));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use advent_lib::read::test_input;
+
+    #[test]
+    fn day23_test() {
+        let input: Vec<Nanobot> = test_input(include_str!("day23.testinput"));
+        assert_eq!(part1(&input), 7);
+        let input: Vec<Nanobot> = test_input(include_str!("day23.testinput2"));
+        assert_eq!(part2(&input), 36);
+    }
 }
