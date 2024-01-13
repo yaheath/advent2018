@@ -20,11 +20,11 @@ impl FromStr for Step {
                 r"Step ([A-Z]) must.*before step ([A-Z])").unwrap();
         }
         match RE.captures(s) {
-            None => return Err(format!("invalid input: {}", s)),
+            None => Err(format!("invalid input: {}", s)),
             Some(caps) => {
                 let depends_on = caps.get(1).unwrap().as_str().chars().next().unwrap();
                 let name = caps.get(2).unwrap().as_str().chars().next().unwrap();
-                return Ok(Step {name: name, depends_on: depends_on});
+                Ok(Step {name, depends_on})
             },
         }
     }
@@ -36,7 +36,7 @@ fn part1(deps: &HashMap<char, Vec<char>>,
     let mut done: HashSet<char> = HashSet::new();
     let mut queue: BTreeSet<char> = BTreeSet::new();
     for (key, val) in deps.iter() {
-        if val.len() == 0 {
+        if val.is_empty() {
             queue.insert(*key);
         }
     }
@@ -45,7 +45,7 @@ fn part1(deps: &HashMap<char, Vec<char>>,
         done.insert(item);
         if revdeps.contains_key(&item) {
             for c in revdeps.get(&item).unwrap().iter() {
-                if deps.get(&c).unwrap().iter().all(|x| done.contains(x)) {
+                if deps.get(c).unwrap().iter().all(|x| done.contains(x)) {
                     queue.insert(*c);
                 }
             }
@@ -82,7 +82,7 @@ fn part2<const NWORKERS: usize>(deps: &HashMap<char, Vec<char>>,
     let mut done: HashSet<char> = HashSet::new();
     let mut queue: BTreeSet<char> = BTreeSet::new();
     for (key, val) in deps.iter() {
-        if val.len() == 0 {
+        if val.is_empty() {
             queue.insert(*key);
         }
     }
@@ -113,7 +113,7 @@ fn part2<const NWORKERS: usize>(deps: &HashMap<char, Vec<char>>,
                 done.insert(w.item);
                 if revdeps.contains_key(&w.item) {
                     for c in revdeps.get(&w.item).unwrap().iter() {
-                        if deps.get(&c).unwrap().iter().all(|x| done.contains(x)) {
+                        if deps.get(c).unwrap().iter().all(|x| done.contains(x)) {
                             queue.insert(*c);
                         }
                     }
@@ -130,13 +130,13 @@ fn setup(data: &[Step]) -> (HashMap<char, Vec<char>>, HashMap<char, Vec<char>>) 
     let mut deps: HashMap<char, Vec<char>> = HashMap::new();
     let mut revdeps: HashMap<char, Vec<char>> = HashMap::new();
     for step in data {
-        let item = revdeps.entry(step.depends_on).or_insert(Vec::new());
+        let item = revdeps.entry(step.depends_on).or_default();
         item.push(step.name);
-        let item = deps.entry(step.name).or_insert(Vec::new());
+        let item = deps.entry(step.name).or_default();
         item.push(step.depends_on);
 
-        deps.entry(step.depends_on).or_insert(Vec::new());
-        revdeps.entry(step.name).or_insert(Vec::new());
+        deps.entry(step.depends_on).or_default();
+        revdeps.entry(step.name).or_default();
     }
     (deps, revdeps)
 }

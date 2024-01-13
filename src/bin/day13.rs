@@ -31,9 +31,9 @@ struct Cart {
 impl Cart {
     fn new(x: i64, y: i64, dir: Dir) -> Self {
         Cart {
-            x: x,
-            y: y,
-            dir: dir,
+            x,
+            y,
+            dir,
             num_turns: 0,
         }
     }
@@ -61,12 +61,12 @@ fn search_coll(carts: &mut Vec<Cart>, with: &Cart) -> bool {
             crashed = true;
         }
     }
-    return crashed;
+    crashed
 }
 
 fn step(
     grid: &mut Grid<TrackCell>,
-    mut carts: &mut Vec<Cart>,
+    carts: &mut Vec<Cart>,
     crash_happened: &mut Option<(i64, i64)>,
 ) -> bool {
     carts.sort_unstable_by(|a, b|
@@ -77,8 +77,8 @@ fn step(
         }
     );
     let mut done: Vec<Cart> = Vec::with_capacity(carts.len());
-    while !carts.is_empty() {
-        let mut c = carts.pop().unwrap();
+    while let Some(mut c) = carts.pop() {
+        
         match c.dir {
             Dir::N => c.y -= 1,
             Dir::S => c.y += 1,
@@ -104,7 +104,7 @@ fn step(
                 panic!("empty cell {},{}", c.x, c.y);
             },
         }
-        let crashed1 = search_coll(&mut carts, &c);
+        let crashed1 = search_coll(carts, &c);
         let crashed2 = search_coll(&mut done, &c);
         if crashed1 || crashed2 {
             if crash_happened.is_none() {

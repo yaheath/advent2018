@@ -27,9 +27,9 @@ impl Instruction {
             let c = caps.get(4).unwrap().as_str().parse::<usize>().unwrap();
             Some(Self {
                 opcode: OPERATIONS.get_key_value(o).unwrap().0,
-                a: a,
-                b: b,
-                c: c,
+                a,
+                b,
+                c,
             })
         }
         else {
@@ -91,6 +91,12 @@ pub struct VM {
     break_on_access: Option<usize>,
     is_at_breakpoint: bool,
 }
+impl Default for VM {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl VM {
     pub fn new() -> Self {
         VM {

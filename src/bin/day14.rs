@@ -8,11 +8,8 @@ struct State {
 }
 impl State {
     fn new() -> Self {
-        let mut scores = Vec::new();
-        scores.push(3);
-        scores.push(7);
         State {
-            scores: scores,
+            scores: vec![3, 7],
             elf1: 0,
             elf2: 1,
         }
@@ -46,7 +43,7 @@ fn part2(seq: &str) -> usize {
     loop {
         state.step();
         while curindex + digits.len() < state.scores.len() {
-            if &state.scores[curindex .. curindex + digits.len()] == &digits[..] {
+            if state.scores[curindex .. curindex + digits.len()] == digits[..] {
                 return curindex;
             }
             curindex += 1;

@@ -18,7 +18,7 @@ fn main() {
                 //println!("hit breakpoint: {inst:?} {:?}", vm.r);
                 assert_eq!(inst.opcode, "eqrr");
                 let target = if inst.a == 0 { vm.r[inst.b] } else { vm.r[inst.a] };
-                if values.len() == 0 {
+                if values.is_empty() {
                     println!("Part 1: {target}");
                     println!("NOTE: getting the part 2 answer will take a long time");
                 }

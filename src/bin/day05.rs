@@ -14,7 +14,7 @@ fn react(input: &str) -> String {
         if np == *polymer { break; }
         polymer = Box::new(np.to_owned());
     }
-    return *polymer;
+    *polymer
 }
 
 fn part1(input: &str) -> usize {
@@ -28,7 +28,7 @@ fn part2(input: &str) -> usize {
         let mut pat = String::from("(?i)");
         pat.push(c as char);
         let reg = Regex::new(&pat).unwrap();
-        let size = react(&reg.replace_all(input, "").to_string()).len();
+        let size = react(reg.replace_all(input, "").as_ref()).len();
         if size < minlen {
             minlen = size;
         }
@@ -49,7 +49,7 @@ mod tests {
 
     #[test]
     fn day05_test() {
-        let input: Vec<String> = test_input("dabAcCaCBAcCcaDA".into());
+        let input: Vec<String> = test_input("dabAcCaCBAcCcaDA");
         assert_eq!(part1(&input[0]), 10);
         assert_eq!(part2(&input[0]), 4);
     }

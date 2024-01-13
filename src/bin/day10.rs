@@ -22,15 +22,15 @@ impl FromStr for Point {
             ).unwrap();
         }
         match RE.captures(s) {
-            None => return Err(format!("invalid input: {}", s)),
+            None => Err(format!("invalid input: {}", s)),
             Some(caps) => {
                 let x_loc = caps.get(1).unwrap().as_str().parse::<i64>().unwrap();
                 let y_loc = caps.get(2).unwrap().as_str().parse::<i64>().unwrap();
                 let x_vel = caps.get(3).unwrap().as_str().parse::<i64>().unwrap();
                 let y_vel = caps.get(4).unwrap().as_str().parse::<i64>().unwrap();
-                return Ok(Point {
-                    x_loc: x_loc, y_loc: y_loc, x_vel: x_vel, y_vel: y_vel,
-                });
+                Ok(Point {
+                    x_loc, y_loc, x_vel, y_vel,
+                })
             },
         }
     }
@@ -61,7 +61,7 @@ fn bothparts(data: &Vec<Point>) -> (String, i64) {
             maxy = maxy.max(s.y_loc);
         }
 
-        let newarea = (maxx - minx + 1) as i64 * (maxy - miny + 1) as i64;
+        let newarea = (maxx - minx + 1) * (maxy - miny + 1);
         if area == -1 || area > newarea {
             area = newarea;
         }

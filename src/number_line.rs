@@ -3,6 +3,7 @@ use std::ops::{Bound, Index, IndexMut, RangeBounds};
 use std::slice::Iter;
 use std::vec::Vec;
 
+#[derive(Clone)]
 pub struct NumberLine<T: Copy + PartialEq> {
     min_idx: i64,
     max_idx: i64,
@@ -13,38 +14,41 @@ impl<T: Copy + PartialEq> NumberLine<T> {
     pub fn new(min_idx: i64, max_idx: i64, default_val: T) -> Self {
         assert!(max_idx >= min_idx);
         Self {
-            min_idx: min_idx,
-            max_idx: max_idx,
+            min_idx,
+            max_idx,
             data: vec![default_val; (max_idx - min_idx + 1) as usize],
-            default_val: default_val,
+            default_val,
         }
     }
     pub fn from_initial(initial: &[T], default_val: T) -> Self {
         let mut data: Vec<T> = vec![default_val; initial.len()];
-        data.copy_from_slice(&initial[..]);
+        data.copy_from_slice(initial);
         Self {
             min_idx: 0,
             max_idx: data.len() as i64 - 1,
-            data: data,
-            default_val: default_val,
+            data,
+            default_val,
         }
     }
     pub fn len(&self) -> usize { self.data.len() }
+    pub fn is_empty(&self) -> bool { self.data.is_empty() }
     pub fn start_index(&self) -> i64 { self.min_idx }
     pub fn end_index(&self) -> i64 { self.max_idx + 1 }
+    /*
     pub fn clone(&self) -> Self {
         let mut data: Vec<T> = vec![self.default_val; self.data.len()];
         data.copy_from_slice(&self.data[..]);
         Self {
             min_idx: self.min_idx,
             max_idx: self.max_idx,
-            data: data,
+            data,
             default_val: self.default_val,
         }
     }
+    */
     pub fn iter(&self) -> Iter<T> { self.data.iter() }
     pub fn enumerate(&self) -> NumberLineEnumerator<T> {
-        NumberLineEnumerator::new(&self)
+        NumberLineEnumerator::new(self)
     }
 }
 impl<T: Copy + PartialEq> Index<i64> for NumberLine<T> {
@@ -102,9 +106,9 @@ impl<'a, T: Copy + PartialEq> NumberLineEnumerator<'a, T> {
             }
         }
         Self {
-            obj: obj,
+            obj,
             idx: min_idx,
-            max_idx: max_idx,
+            max_idx,
         }
     }
 }
@@ -129,15 +133,15 @@ mod test {
     #[test]
     fn numberline() {
         let mut foo: NumberLine<bool> = NumberLine::new(1, 10, false);
-        assert_eq!(foo[0], false);
-        assert_eq!(foo[1], false);
-        assert_eq!(foo[10], false);
-        assert_eq!(foo[333], false);
-        assert_eq!(foo[-333], false);
+        assert!(!foo[0]);
+        assert!(!foo[1]);
+        assert!(!foo[10]);
+        assert!(!foo[333]);
+        assert!(!foo[-333]);
         assert_eq!(foo.len(), 10);
 
         foo[2] = true;
-        assert_eq!(foo[2], true);
+        assert!(foo[2]);
         assert_eq!(foo.len(), 10);
         foo[4] = true;
 
@@ -148,19 +152,19 @@ mod test {
         assert_eq!(e.next(), None);
 
         foo[-2] = true;
-        assert_eq!(foo[-2], true);
-        assert_eq!(foo[-1], false);
-        assert_eq!(foo[0], false);
-        assert_eq!(foo[1], false);
-        assert_eq!(foo[2], true);
-        assert_eq!(foo[3], false);
+        assert!(foo[-2]);
+        assert!(!foo[-1]);
+        assert!(!foo[0]);
+        assert!(!foo[1]);
+        assert!(foo[2]);
+        assert!(!foo[3]);
         assert_eq!(foo.len(), 42);
 
         foo[20] = true;
-        assert_eq!(foo[2], true);
-        assert_eq!(foo[19], false);
-        assert_eq!(foo[20], true);
-        assert_eq!(foo[21], false);
+        assert!(foo[2]);
+        assert!(!foo[19]);
+        assert!(foo[20]);
+        assert!(!foo[21]);
         assert_eq!(foo.len(), 74);
     }
 }

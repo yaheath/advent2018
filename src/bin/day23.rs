@@ -5,38 +5,33 @@ use std::str::FromStr;
 use std::vec::Vec;
 use lazy_static::lazy_static;
 use regex::Regex;
+use ya_advent_lib::coords::Coord3D;
 use ya_advent_lib::read::read_input;
-
-type Coord = (i64,i64,i64);
 
 #[derive(Copy, Clone)]
 struct Nanobot {
-    x: i64,
-    y: i64,
-    z: i64,
+    coord: Coord3D,
     r: i64,
 }
 impl Nanobot {
     fn in_range(&self, other: &Nanobot) -> bool {
-        self.r >= (self.x - other.x).abs() + (self.y - other.y).abs() + (self.z - other.z).abs()
+        self.r >= self.coord.mdist_to(&other.coord)
     }
-    fn center_and_corners(&self) -> Vec<Coord> {
+    fn center_and_corners(&self) -> Vec<Coord3D> {
         vec![
-            (self.x, self.y, self.z),
-            (self.x - self.r, self.y, self.z),
-            (self.x + self.r, self.y, self.z),
-            (self.x, self.y - self.r, self.z),
-            (self.x, self.y + self.r, self.z),
-            (self.x, self.y, self.z - self.r),
-            (self.x, self.y, self.z + self.r),
+            Coord3D::new(self.coord.x, self.coord.y, self.coord.z),
+            Coord3D::new(self.coord.x - self.r, self.coord.y, self.coord.z),
+            Coord3D::new(self.coord.x + self.r, self.coord.y, self.coord.z),
+            Coord3D::new(self.coord.x, self.coord.y - self.r, self.coord.z),
+            Coord3D::new(self.coord.x, self.coord.y + self.r, self.coord.z),
+            Coord3D::new(self.coord.x, self.coord.y, self.coord.z - self.r),
+            Coord3D::new(self.coord.x, self.coord.y, self.coord.z + self.r),
         ]
     }
     fn intersects(&self, bbox: &BBox) -> bool {
-        bbox.corners().iter().any(|(x,y,z)|
-            self.r >= (self.x - x).abs() + (self.y - y).abs() + (self.z - z).abs()
-        ) ||
-        self.center_and_corners().iter().any(|(x,y,z)|
-            bbox.x.contains(x) && bbox.y.contains(y) && bbox.z.contains(z)
+        bbox.corners().iter().any(|c| self.r >= c.mdist_to(&self.coord))
+        || self.center_and_corners().iter().any(|c|
+            bbox.x.contains(&c.x) && bbox.y.contains(&c.y) && bbox.z.contains(&c.z)
         )
     }
 }
@@ -52,7 +47,7 @@ impl FromStr for Nanobot {
             let y = caps.get(2).unwrap().as_str().parse::<i64>().unwrap();
             let z = caps.get(3).unwrap().as_str().parse::<i64>().unwrap();
             let r = caps.get(4).unwrap().as_str().parse::<i64>().unwrap();
-            Ok(Nanobot{x:x, y:y, z:z, r:r})
+            Ok(Nanobot{coord: Coord3D::new(x, y, z), r})
         }
         else {
             Err(format!("invalid input: {}", s))
@@ -72,16 +67,16 @@ impl BBox {
         (self.y.end - self.y.start) as i128 *
         (self.z.end - self.z.start) as i128
     }
-    fn corners(&self) -> Vec<Coord> {
+    fn corners(&self) -> Vec<Coord3D> {
         vec![
-            (self.x.start, self.y.start, self.z.start),
-            (self.x.end - 1, self.y.start, self.z.start),
-            (self.x.start, self.y.end - 1, self.z.start),
-            (self.x.end - 1, self.y.end - 1, self.z.start),
-            (self.x.start, self.y.start, self.z.end - 1),
-            (self.x.end - 1, self.y.start, self.z.end - 1),
-            (self.x.start, self.y.end - 1, self.z.end - 1),
-            (self.x.end - 1, self.y.end - 1, self.z.end - 1),
+            Coord3D::new(self.x.start, self.y.start, self.z.start),
+            Coord3D::new(self.x.end - 1, self.y.start, self.z.start),
+            Coord3D::new(self.x.start, self.y.end - 1, self.z.start),
+            Coord3D::new(self.x.end - 1, self.y.end - 1, self.z.start),
+            Coord3D::new(self.x.start, self.y.start, self.z.end - 1),
+            Coord3D::new(self.x.end - 1, self.y.start, self.z.end - 1),
+            Coord3D::new(self.x.start, self.y.end - 1, self.z.end - 1),
+            Coord3D::new(self.x.end - 1, self.y.end - 1, self.z.end - 1),
         ]
     }
     fn split(&self) -> Vec<Self> {
@@ -158,7 +153,7 @@ struct State {
 }
 
 impl State {
-    fn new(bbox: BBox, bots: &Vec<Nanobot>) -> Self {
+    fn new(bbox: BBox, bots: &[Nanobot]) -> Self {
         // this assumes the box does not contain any zero axes
         let dx = if bbox.x.start >= 0 { bbox.x.start } else { -(bbox.x.end - 1) };
         let dy = if bbox.y.start >= 0 { bbox.y.start } else { -(bbox.y.end - 1) };
@@ -186,27 +181,27 @@ impl PartialOrd for State {
     }
 }
 
-fn part1(data: &Vec<Nanobot>) -> usize {
+fn part1(data: &[Nanobot]) -> usize {
     let bot = data[0];
     data.iter()
         .filter(|b| bot.in_range(b))
         .count()
 }
 
-fn part2(data: &Vec<Nanobot>) -> i64 {
-    let mut xstart = data[0].x;
-    let mut xend = data[0].x + 1;
-    let mut ystart = data[0].y;
-    let mut yend = data[0].y + 1;
-    let mut zstart = data[0].z;
-    let mut zend = data[0].z + 1;
+fn part2(data: &[Nanobot]) -> i64 {
+    let mut xstart = data[0].coord.x;
+    let mut xend = data[0].coord.x + 1;
+    let mut ystart = data[0].coord.y;
+    let mut yend = data[0].coord.y + 1;
+    let mut zstart = data[0].coord.z;
+    let mut zend = data[0].coord.z + 1;
     data.iter().for_each(|bot| {
-        xstart = xstart.min(bot.x - bot.r);
-        xend = xend.max(bot.x + bot.r + 1);
-        ystart = ystart.min(bot.y - bot.r);
-        yend = yend.max(bot.y + bot.r + 1);
-        zstart = zstart.min(bot.z - bot.r);
-        zend = zend.max(bot.z + bot.r + 1);
+        xstart = xstart.min(bot.coord.x - bot.r);
+        xend = xend.max(bot.coord.x + bot.r + 1);
+        ystart = ystart.min(bot.coord.y - bot.r);
+        yend = yend.max(bot.coord.y + bot.r + 1);
+        zstart = zstart.min(bot.coord.z - bot.r);
+        zend = zend.max(bot.coord.z + bot.r + 1);
     });
 
     let bbox = BBox { x: xstart..xend, y: ystart..yend, z: zstart..zend };

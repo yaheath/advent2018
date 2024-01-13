@@ -75,10 +75,10 @@ fn setup(input: &[String]) -> HashMap<i32, Guard> {
                             if hour == 0 {
                                 stop = minute;
                             }
-                            let log = cur_guard.log.entry(date).or_insert([false; 60]);
+                            let logs = cur_guard.log.entry(date).or_insert([false; 60]);
 
-                            for i in sleepstart .. stop {
-                                log[i] = true;
+                            for log in logs.iter_mut().take(stop).skip(sleepstart) {
+                                *log = true;
                             }
                         }
                         sleeping = false;

@@ -14,10 +14,7 @@ enum MapCell {
 }
 impl MapCell {
     fn is_empty(&self) -> bool {
-        match *self {
-            MapCell::Empty => true,
-            _ => false,
-        }
+        matches!(*self, MapCell::Empty)
     }
     fn from_unit(unit: &Unit) -> Self {
         if unit.is_elf {
@@ -39,12 +36,12 @@ struct Unit {
 impl Unit {
     fn new(id: usize, x: i64, y: i64, is_elf: bool, attack: i64) -> Self {
         Self {
-            id: id,
-            is_elf: is_elf,
-            x: x,
-            y: y,
+            id,
+            is_elf,
+            x,
+            y,
             hp: 200,
-            attack: attack,
+            attack,
         }
     }
     fn is_alive(&self) -> bool {
@@ -63,8 +60,8 @@ impl State {
     fn initial(x: i64, y: i64) -> Self {
         State {
             cost: 0,
-            x: x,
-            y: y,
+            x,
+            y,
             path: Vec::new(),
         }
     }
@@ -76,9 +73,9 @@ impl State {
         path.push((x, y));
         State {
             cost: self.cost + 1,
-            x: x,
-            y: y,
-            path: path,
+            x,
+            y,
+            path,
         }
     }
 }
@@ -126,7 +123,7 @@ impl Battle {
         let mut inst = Self {
             grid: Grid::new(0, 0, width-1, height-1, MapCell::Empty),
             units: Vec::new(),
-            elf_attack: elf_attack,
+            elf_attack,
         };
         for (uy, line) in input.iter().enumerate() {
             let y = uy as i64;
@@ -207,7 +204,7 @@ impl Battle {
             }
 
             let mut check = |x: i64, y: i64| {
-                if let Some(_) = self.is_enemy(unit, x, y) {
+                if self.is_enemy(unit, x, y).is_some() {
                     if state.cost <= mindist {
                         candidates.push(state.clone());
                         mindist = state.cost;
@@ -232,7 +229,7 @@ impl Battle {
         if self.units.iter().filter(|u| u.is_elf != unit.is_elf).all(|u| !u.is_alive()) {
             return Action::Finished;
         }
-        return Action::None
+        Action::None
     }
 
     // see if there's an adjacent unit we can attack
@@ -252,7 +249,7 @@ impl Battle {
         if let Some(enemy) = self.is_enemy(unit, unit.x, unit.y + 1) {
             in_range.push(enemy);
         }
-        if in_range.len() > 0 {
+        if !in_range.is_empty() {
             in_range.sort_by(|a, b| a.hp.cmp(&b.hp));
             Action::Attack(in_range[0].id)
         }

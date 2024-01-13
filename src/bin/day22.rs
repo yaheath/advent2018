@@ -114,7 +114,7 @@ fn setup(input: &[Input]) -> (Coord2D, CaveGrid) {
 }
 
 fn part1(input: &[Input]) -> i64 {
-    let (target, mut grid) = setup(&input);
+    let (target, mut grid) = setup(input);
     (0 ..= target.x)
         .cartesian_product(0 ..= target.y)
         .map(|(x, y)| grid.get(Coord2D::new(x, y)).e_level % 3)
@@ -122,7 +122,7 @@ fn part1(input: &[Input]) -> i64 {
 }
 
 fn part2(input: &[Input]) -> i64 {
-    let (target, mut grid) = setup(&input);
+    let (target, mut grid) = setup(input);
     let mut dists: HashMap<(Coord2D, Tool), i64> = HashMap::new();
     let mut heap = BinaryHeap::new();
     dists.insert((Coord2D::new(0, 0), Tool::Torch), 0);
@@ -207,7 +207,7 @@ impl State {
         State {
             cost: self.cost + 1,
             h_cost: self.cost + 1 + d,
-            point: point,
+            point,
             tool: self.tool,
         }
     }
@@ -216,7 +216,7 @@ impl State {
             cost: self.cost + 7,
             h_cost: self.h_cost + 7,
             point: self.point,
-            tool: tool,
+            tool,
         }
     }
     fn key(&self) -> (Coord2D, Tool) {

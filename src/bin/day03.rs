@@ -49,14 +49,14 @@ impl FromStr for Claim {
             static ref RE: Regex = Regex::new(r"^.(.*?) @ (-?\d+),(-?\d+): (-?\d+)x(-?\d+)").unwrap();
         }
         match RE.captures(s) {
-            None => return Err(format!("invalid input: {}", s)),
+            None => Err(format!("invalid input: {}", s)),
             Some(caps) => {
                 let name:String = caps.get(1).unwrap().as_str().to_string();
                 let x:i32 = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();
                 let y:i32 = caps.get(3).unwrap().as_str().parse::<i32>().unwrap();
                 let w:i32 = caps.get(4).unwrap().as_str().parse::<i32>().unwrap();
                 let h:i32 = caps.get(5).unwrap().as_str().parse::<i32>().unwrap();
-                return Ok(Claim {name: name, x: x, y: y, h: h, w: w});
+                Ok(Claim {name, x, y, h, w})
             },
         }
     }
@@ -70,7 +70,7 @@ fn bothparts(data: &[Claim]) -> (usize, String) {
     data.iter()
         .tuple_combinations()
         .for_each(|(a, b)| {
-            if let Some(o) = a.intersect(&b) {
+            if let Some(o) = a.intersect(b) {
                 allkeys.remove(&a.name);
                 allkeys.remove(&b.name);
                 (o.x .. o.x + o.w)

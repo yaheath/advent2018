@@ -130,7 +130,7 @@ fn go_vertical(start_x:i64, start_y:i64, grid: &WrappedGrid<WCell>) -> bool {
         }
     }
     loop {
-        if go_horiz(x, y, &grid) { return true; }
+        if go_horiz(x, y, grid) { return true; }
         y -= 1;
         if y <= start_y { return false; }
     }
@@ -152,7 +152,7 @@ fn go_horiz(start_x:i64, start_y:i64, grid: &WrappedGrid<WCell>) -> bool {
         x -= 1;
         match grid.get(x, y + 1) {
             WCell::Sand | WCell::WetSand =>
-                if go_vertical(x, y, &grid) {
+                if go_vertical(x, y, grid) {
                     unbound = true;
                     break;
                 },
@@ -173,7 +173,7 @@ fn go_horiz(start_x:i64, start_y:i64, grid: &WrappedGrid<WCell>) -> bool {
         x += 1;
         match grid.get(x, y + 1) {
             WCell::Sand | WCell::WetSand =>
-                if go_vertical(x, y, &grid) {
+                if go_vertical(x, y, grid) {
                     unbound = true;
                     break;
                 },
@@ -186,7 +186,7 @@ fn go_horiz(start_x:i64, start_y:i64, grid: &WrappedGrid<WCell>) -> bool {
             grid.set(xx, y, WCell::Water);
         }
     }
-    return unbound;
+    unbound
 }
 
 fn dump_grid(grid: &Grid<WCell>) {

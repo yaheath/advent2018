@@ -39,7 +39,7 @@ impl FromStr for InputItem {
             }
             return Ok(InputItem::InitialState(state));
         }
-        if let Some(_) = RE_BLANK.captures(s) {
+        if RE_BLANK.captures(s).is_some() {
             return Ok(InputItem::None);
         }
         if let Some(caps) = RE_MAP.captures(s) {
@@ -53,7 +53,7 @@ impl FromStr for InputItem {
                 }
             }
             return Ok(
-                InputItem::MapItem(k, ostr.chars().next().unwrap() == '#')
+                InputItem::MapItem(k, ostr.starts_with('#'))
             );
         }
         Err("invalid input line".to_string())
@@ -64,7 +64,7 @@ fn stringify(pots: &NumberLine<bool>) -> String {
     pots.enumerate().map(|v| if v.1 { '#' } else { '.' }).collect::<String>()
 }
 
-fn part1(map: &HashMap<u32, bool>, initial: &Vec<bool>) -> i64 {
+fn part1(map: &HashMap<u32, bool>, initial: &[bool]) -> i64 {
     let mut pots = NumberLine::<bool>::from_initial(initial, false);
     for _ in 0..20 {
         step(&mut pots, map);

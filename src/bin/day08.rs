@@ -45,8 +45,8 @@ fn part2_recurse(iter: &mut Iter<usize>) -> usize {
     let n_children = *iter.next().unwrap();
     let n_metas = *iter.next().unwrap();
     let mut values: Vec<usize> = vec![0; n_children];
-    for idx in 0..n_children {
-        values[idx] = part2_recurse(iter);
+    for value in values.iter_mut() {
+        *value = part2_recurse(iter);
     }
     let mut value: usize = 0;
     for _ in 0..n_metas {
@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn day08_test() {
-        let input: Vec<Input> = test_input("2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2".into());
+        let input: Vec<Input> = test_input("2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2");
         assert_eq!(part1(&input[0].list), 138);
         assert_eq!(part2(&input[0].list), 66);
     }

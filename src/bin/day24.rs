@@ -34,18 +34,15 @@ impl FromStr for Input {
                 if let Some(acaps) = A_RE.captures(attr_cap.as_str()) {
                     //println!("{:?}", acaps);
                     for n in [1, 3] {
-                        match acaps.get(n) {
-                            Some(mode) => {
-                                if let Some(lst) = acaps.get(n+1) {
-                                    let items = lst.as_str().split(", ").map(|s| s.to_string());
-                                    if mode.as_str() == "weak" {
-                                        weak_to = items.collect();
-                                    } else {
-                                        immune_to = items.collect();
-                                    }
+                        if let Some(mode) = acaps.get(n) {
+                            if let Some(lst) = acaps.get(n+1) {
+                                let items = lst.as_str().split(", ").map(|s| s.to_string());
+                                if mode.as_str() == "weak" {
+                                    weak_to = items.collect();
+                                } else {
+                                    immune_to = items.collect();
                                 }
-                            },
-                            None => {},
+                            }
                         }
                     }
                 }
@@ -60,12 +57,12 @@ impl FromStr for Input {
                 id: 0,
                 army: Army::Unassigned,
                 n_units: n,
-                hp: hp,
+                hp,
                 dmg: d,
                 attack: a,
                 init: i,
-                weak_to: weak_to,
-                immune_to: immune_to,
+                weak_to,
+                immune_to,
             }))
         }
         else {
@@ -74,14 +71,14 @@ impl FromStr for Input {
     }
 }
 
-fn setup(input: &Vec<Vec<Input>>, immune_boost: i64) -> (Vec<Group>, Vec<Group>) {
+fn setup(input: &[Vec<Input>], immune_boost: i64) -> (Vec<Group>, Vec<Group>) {
     let mut immune = Vec::new();
     let mut infection = Vec::new();
-    let mut id = (0..).into_iter();
-    for n in 0..2 {
-        match input[n][0] {
+    let mut id = 0..;
+    for inp in input {
+        match inp[0] {
             Input::Immune => {
-                immune = input[n].iter()
+                immune = inp.iter()
                     .skip(1)
                     .map(|ig| match ig {
                         Input::Group(g) => g.assign(id.next().unwrap(), Army::Immune, immune_boost),
@@ -90,7 +87,7 @@ fn setup(input: &Vec<Vec<Input>>, immune_boost: i64) -> (Vec<Group>, Vec<Group>)
                     .collect();
             },
             Input::Infection => {
-                infection = input[n].iter()
+                infection = inp.iter()
                     .skip(1)
                     .map(|ig| match ig {
                         Input::Group(g) => g.assign(id.next().unwrap(), Army::Infection, 0),
@@ -141,7 +138,7 @@ impl Group {
         if other.weak_to.contains(&self.attack) {
             return self.ep() * 2;
         }
-        return self.ep();
+        self.ep()
     }
 }
 
@@ -204,7 +201,7 @@ fn do_attacks(groups: &mut HashMap<usize, Group>, targets: &HashMap<usize, usize
 fn fight(immune: Vec<Group>, infection: Vec<Group>) -> (Vec<Group>, Vec<Group>, bool) {
     let mut groups = HashMap::from_iter(
         immune.into_iter()
-            .chain(infection.into_iter())
+            .chain(infection)
             .map(|g| (g.id, g))
     );
 
@@ -225,18 +222,18 @@ fn fight(immune: Vec<Group>, infection: Vec<Group>) -> (Vec<Group>, Vec<Group>, 
     (immune, infection, kills)
 }
 
-fn combat(input: &Vec<Vec<Input>>, immune_boost: i64) -> (i64, Army) {
-    let (mut immune, mut infection) = setup(&input, immune_boost);
+fn combat(input: &[Vec<Input>], immune_boost: i64) -> (i64, Army) {
+    let (mut immune, mut infection) = setup(input, immune_boost);
     let mut kills;
     loop {
         (immune, infection, kills) = fight(immune, infection);
-        if immune.len() == 0 || infection.len() == 0 || !kills {
+        if immune.is_empty() || infection.is_empty() || !kills {
             break;
         }
     }
-    let victor = if immune.len() == 0 {
+    let victor = if immune.is_empty() {
         Some(infection)
-    } else if infection.len() == 0 {
+    } else if infection.is_empty() {
         Some(immune)
     } else {
         None
@@ -249,12 +246,12 @@ fn combat(input: &Vec<Vec<Input>>, immune_boost: i64) -> (i64, Army) {
     }
 }
 
-fn part1(input: &Vec<Vec<Input>>) -> i64 {
+fn part1(input: &[Vec<Input>]) -> i64 {
     let (answer, _) = combat(input, 0);
     answer
 }
 
-fn part2(input: &Vec<Vec<Input>>) -> i64 {
+fn part2(input: &[Vec<Input>]) -> i64 {
     // binary search would work a lot better here
     for b in 1.. {
         let (units, victor) = combat(input, b);

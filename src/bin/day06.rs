@@ -8,13 +8,13 @@ const MARGIN:i64 = 50;
 
 fn bothparts(data: &Vec<Coord2D>, test: bool) -> (i64, i64) {
     let min_x: i64 = data.iter().map(|c| c.x)
-        .fold(100000, |acc, v| min(acc, v)) - MARGIN;
+        .fold(100000, min) - MARGIN;
     let min_y: i64 = data.iter().map(|c| c.y)
-        .fold(100000, |acc, v| min(acc, v)) - MARGIN;
+        .fold(100000, min) - MARGIN;
     let max_x: i64 = data.iter().map(|c| c.x)
-        .fold(0, |acc, v| max(acc, v)) + MARGIN;
+        .fold(0, max) + MARGIN;
     let max_y: i64 = data.iter().map(|c| c.y)
-        .fold(0, |acc, v| max(acc, v)) + MARGIN;
+        .fold(0, max) + MARGIN;
     let mut grid = Grid::new(min_x, min_y, max_x, max_y, -1);
     let mut td_grid = Grid::new(min_x, min_y, max_x, max_y, -1);
     for x in min_x .. max_x+1 {

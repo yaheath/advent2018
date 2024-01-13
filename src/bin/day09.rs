@@ -18,11 +18,11 @@ impl FromStr for Input {
                 r"(\d+) players.*worth (\d+)").unwrap();
         }
         match RE.captures(s) {
-            None => return Err(format!("invalid input: {}", s)),
+            None => Err(format!("invalid input: {}", s)),
             Some(caps) => {
                 let n_players = caps.get(1).unwrap().as_str().parse::<usize>().unwrap();
                 let max_marble = caps.get(2).unwrap().as_str().parse::<usize>().unwrap();
-                return Ok(Input {n_players: n_players, max_marble: max_marble});
+                Ok(Input {n_players, max_marble})
             },
         }
     }
@@ -92,19 +92,19 @@ mod tests {
 
     #[test]
     fn day09_test() {
-        let input: Vec<Input> = test_input("10 players; last marble is worth 1618 points".into());
+        let input: Vec<Input> = test_input("10 players; last marble is worth 1618 points");
         assert_eq!(part1(&input[0]), 8317);
         assert_eq!(part2(&input[0]), 74765078);
-        let input: Vec<Input> = test_input("13 players; last marble is worth 7999 points".into());
+        let input: Vec<Input> = test_input("13 players; last marble is worth 7999 points");
         assert_eq!(part1(&input[0]), 146373);
         assert_eq!(part2(&input[0]), 1406506154);
-        let input: Vec<Input> = test_input("17 players; last marble is worth 1104 points".into());
+        let input: Vec<Input> = test_input("17 players; last marble is worth 1104 points");
         assert_eq!(part1(&input[0]), 2764);
         assert_eq!(part2(&input[0]), 20548882);
-        let input: Vec<Input> = test_input("21 players; last marble is worth 6111 points".into());
+        let input: Vec<Input> = test_input("21 players; last marble is worth 6111 points");
         assert_eq!(part1(&input[0]), 54718);
         assert_eq!(part2(&input[0]), 507583214);
-        let input: Vec<Input> = test_input("30 players; last marble is worth 5807 points".into());
+        let input: Vec<Input> = test_input("30 players; last marble is worth 5807 points");
         assert_eq!(part1(&input[0]), 37305);
         assert_eq!(part2(&input[0]), 320997431);
     }

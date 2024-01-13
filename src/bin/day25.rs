@@ -54,14 +54,14 @@ fn part1(input: &Vec<Coord>) -> usize {
     for coord in input {
         let matches: Vec<usize> = cstns.iter()
             .enumerate()
-            .filter(|(_, cstn)| cstn.is_adjacent(&coord))
+            .filter(|(_, cstn)| cstn.is_adjacent(coord))
             .map(|(idx, _)| idx)
             .collect();
-        if matches.len() == 0 {
-            cstns.push(C11n::new(coord.clone()));
+        if matches.is_empty() {
+            cstns.push(C11n::new(*coord));
         }
         else {
-            cstns[matches[0]].insert(coord.clone());
+            cstns[matches[0]].insert(*coord);
             let mut extracted = Vec::new();
             for idx in matches.iter().skip(1).rev() {
                 extracted.push(

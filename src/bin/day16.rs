@@ -24,9 +24,9 @@ impl Instruction {
             let c = caps.get(4).unwrap().as_str().parse::<usize>().unwrap();
             Some(Self {
                 opcode: o,
-                a: a,
-                b: b,
-                c: c,
+                a,
+                b,
+                c,
             })
         }
         else {
@@ -119,7 +119,7 @@ fn main() {
 
     loop {
         let line = lineiter.next().unwrap();
-        if line.len() == 0 { break; }
+        if line.is_empty() { break; }
         let before = registers_from_str(&line).unwrap();
         let line = lineiter.next().unwrap();
         let inst = Instruction::from_str(&line).unwrap();
@@ -166,7 +166,7 @@ fn main() {
                 h.remove(item);
             }
         }
-        else if oper_table.iter().all(|h| h.len() == 0) {
+        else if oper_table.iter().all(|h| h.is_empty()) {
             break;
         }
         else {
@@ -186,10 +186,8 @@ fn test_sample(sample: &Sample, operations: &HashMap<&'static str, Op>) -> Vec<&
     let mut syms: Vec<&'static str> = Vec::new();
     for (sym, op) in operations {
         let mut vm = VM::with_reg(&sample.before);
-        if vm.exec(op, &sample.inst).is_ok() {
-            if vm.r == sample.after {
-                syms.push(*sym);
-            }
+        if vm.exec(op, &sample.inst).is_ok() && vm.r == sample.after {
+            syms.push(*sym);
         }
     }
     syms

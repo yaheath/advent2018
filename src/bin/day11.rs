@@ -46,7 +46,7 @@ fn search(grid: &Grid<i64>, min_sizes: i64, max_sizes: i64)
           -> (i64, i64, i64) {
     let sat = SummedAreaTable::from_grid(grid);
     (min_sizes ..= max_sizes)
-        .map(|size| (1 ..= 301-size).into_iter()
+        .map(|size| (1 ..= 301-size)
             .cartesian_product(1 ..= 301-size)
             .map(|(x, y)| (x, y, sat.area_of(x, y, x+size-1, y+size-1)))
             .max_by_key(|(_,_,a)| *a)

@@ -103,7 +103,7 @@ impl State {
     fn initial(point: (i32, i32)) -> Self {
         State {
             cost: 0,
-            point: point,
+            point,
             //path: Vec::new(),
         }
     }
@@ -115,7 +115,7 @@ impl State {
         //path.push((x, y));
         State {
             cost: self.cost + 1,
-            point: point,
+            point,
             //path: path,
         }
     }
@@ -152,7 +152,7 @@ fn main() {
 }
 
 fn bothparts(input: &str) -> (usize, usize) {
-    let tree = parse(&input);
+    let tree = parse(input);
     let map = ElfMap::new();
     traverse(&map, &tree, (0, 0));
     //println!("map has {} rooms", map.data.borrow().len());
@@ -268,14 +268,14 @@ fn parse<'a>(input: &'a str) -> Node {
         }
     }
     assert_eq!(level, 0);
-    if (&input[start..]).len() > 0 || &input[start-1..start] == "|" {
+    if !input[start..].is_empty() || &input[start-1..start] == "|" {
         path.push(Node::Segment(&input[start..]));
     }
-    if path.len() > 0 && branch.len() > 0 {
+    if !path.is_empty() && !branch.is_empty() {
         branch.push(Node::from_path(path));
         path = Vec::new();
     }
-    if branch.len() > 0 {
+    if !branch.is_empty() {
         Node::Branch(branch)
     } else {
         Node::from_path(path)
@@ -291,7 +291,7 @@ mod test {
         if let Node::Segment(foo) = parse("^NEWSNEWS$") {
             assert_eq!(foo, "NEWSNEWS");
         } else {
-            assert!(false);
+            panic!();
         }
 
         if let Node::Branch(foo) = parse("NEWS|SWEN|EEE") {
@@ -300,7 +300,7 @@ mod test {
             assert_eq!(foo[1], Node::Segment("SWEN"));
             assert_eq!(foo[2], Node::Segment("EEE"));
         } else {
-            assert!(false);
+            panic!();
         }
 
         let foo = parse("^ENWWW(NEEE|SSE(EE|N))$");
